@@ -21,7 +21,7 @@ class Post(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         if models.PostUrl.objects.filter(db_post_url=serializer.initial_data['db_post_url']):
-            return Response("url already exist", status=404)
+            return Response("url already exist", status=400)
         serializer.save()
         return Response("ok")
 
