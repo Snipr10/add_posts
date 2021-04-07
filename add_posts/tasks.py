@@ -28,7 +28,6 @@ def start_parsing_url():
         try:
             print(post_url.db_post_url)
             res = requests.get(post_url.db_post_url, proxies=proxies, headers=headers).text
-            html = BeautifulSoup(res, 'html')
             owner_fb_id = find_value(res, '",id:', num_sep_chars=1, separator='"')
             if owner_fb_id is None:
                 owner_fb_id = find_value(res, ';id=', num_sep_chars=0, separator='&')
@@ -38,7 +37,15 @@ def start_parsing_url():
                 if user_name is None:
                     user_name = find_value(res, '<strong class="actor">', num_sep_chars=0, separator='<',
                                            is_first=True)
-            text = html.text
+            text = None
+            try:
+                text = BeautifulSoup(
+                    find_value(res, '><div><p>', num_sep_chars=0, separator='</p></div>', is_first=True)).text
+            except Exception:
+                pass
+            if text is None:
+                html = BeautifulSoup(res, 'html')
+                text = html.text
             comment = find_value(res, '_comment_count', num_sep_chars=2, separator='"', is_first=True)
             reaction = find_value(res, 'reaction_count:{count:', num_sep_chars=0, separator='}')
             if reaction is None:
