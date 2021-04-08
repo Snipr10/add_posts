@@ -64,7 +64,7 @@ class Post(models.Model):
     content_id = models.IntegerField()
     task_id = models.IntegerField()
     user_id = models.IntegerField()
-    state_id = models.IntegerField()
+    # state_id = models.IntegerField()
 
     class Meta:
         db_table = 'posts'
