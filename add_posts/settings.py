@@ -81,7 +81,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'fbs',
         'USER': 'fbs_user',
-        'PASSWORD': 'kDFO267DO21',
+        'PASSWORD': 'tagdesign2088',
         'HOST': 'localhost',
         'PORT': '5432',
     }
