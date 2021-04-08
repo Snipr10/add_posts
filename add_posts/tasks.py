@@ -78,6 +78,7 @@ def start_parsing_url():
 
             content = models.Content.objects.create(text=text)
             print("content" + str(content.id))
+            print("post_url.task_id" + str(post_url.task_id))
             task = models.Task.objects.get(int(post_url.task_id))
             print("task" + str(task.id))
 
