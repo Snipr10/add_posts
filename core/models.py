@@ -57,14 +57,11 @@ class Post(models.Model):
     fb_repost_link = models.CharField(max_length=2048, null=True, blank=True)
     fb_post_link = models.CharField(max_length=1024, null=True, blank=True)
     fb_post_link_likes = models.CharField(max_length=1024, null=True, blank=True)
-    # content = models.ForeignKey(Content, on_delete=models.CASCADE, null=True)
-    # task = models.ForeignKey(Task, on_delete=models.CASCADE, null=True)
-    # user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    # state = models.ForeignKey(PostStat, on_delete=models.CASCADE, null=True)
-    content_id = models.IntegerField()
-    task_id = models.IntegerField()
-    user_id = models.IntegerField()
-    # state_id = models.IntegerField()
+    content = models.ForeignKey(Content, on_delete=models.CASCADE, null=True)
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    stat = models.ForeignKey(PostStat, on_delete=models.CASCADE, null=True)
+
 
     class Meta:
         db_table = 'posts'
