@@ -79,11 +79,11 @@ def start_parsing_url():
             content = models.Content.objects.create(text=text)
             print("content" + str(content.id))
             print("post_url.task_id" + str(post_url.task_id))
-            task = models.Task.objects.get(id = int(post_url.task_id))
+            task = models.Task.objects.get(id=int(post_url.task_id))
             print("task" + str(task.id))
             #
-            post = models.Post.objects.create(content=content.id, task=task.id,
-                                              user=user.id, stat=state.id)
+            post = models.Post.objects.create(content=content, task=task,
+                                              user=user, stat=state)
             print("post " + str(post.id))
             post_url.is_ready = True
             post_url.added_date = timezone.now()
