@@ -70,8 +70,8 @@ def start_parsing_url():
                     user = models.User.objects.create(name=user_name, link=full_url, fb_id=owner_fb_id)
             state = models.PostStat.objects.create(likes=reaction, comments=comment, shares=share)
             content = models.Content.objects.create(text=text)
-            # models.Post.objects.create(content=content, task_id=post_url.task_id, user=user, state=state)
-            models.Post.objects.create(content=content, user=user, state=state)
+            models.Post.objects.create(content=content, task=models.Task.objects.get(post_url.task_id),
+                                       user=user, state=state)
 
             post_url.is_ready = True
             post_url.added_date = timezone.now()
