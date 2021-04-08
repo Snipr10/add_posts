@@ -21,6 +21,7 @@ def start_parsing_url():
     post_url = \
         models.PostUrl.objects.filter(is_ready=False, is_successful=True,
                                       is_parsing=False).order_by('added_date').first()
+    print("post_url" + (post_url.id))
     if post_url is not None:
         post_url.is_parsing = True
         post_url.save()
@@ -70,9 +71,9 @@ def start_parsing_url():
                     user = models.User.objects.create(name=user_name, link=full_url, fb_id=owner_fb_id)
             state = models.PostStat.objects.create(likes=reaction, comments=comment, shares=share)
             content = models.Content.objects.create(text=text)
-            models.Post.objects.create(content=content, task=models.Task.objects.get(post_url.task_id),
-                                       user=user, state=state)
-
+            post = models.Post.objects.create(content=content, task=models.Task.objects.get(post_url.task_id),
+                                              user=user, state=state)
+            print("post " + str(post.id))
             post_url.is_ready = True
             post_url.added_date = timezone.now()
         except Exception as e:
