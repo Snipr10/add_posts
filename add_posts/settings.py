@@ -78,8 +78,8 @@ WSGI_APPLICATION = 'add_posts.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'fbs',
-        'NAME': 'bbz406smsa7jzzgeiixc',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'fbs',
         'USER': 'fbs_user',
         'PASSWORD': 'kDFO267DO21',
         'HOST': 'localhost',
