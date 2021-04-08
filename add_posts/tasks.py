@@ -74,8 +74,12 @@ def start_parsing_url():
                     user = models.User.objects.create(name=user_name, link=full_url, fb_id=owner_fb_id)
             print("user" + str(user.id))
             state = models.PostStat.objects.create(likes=reaction, comments=comment, shares=share)
+            print("state" + str(state.id))
+
             content = models.Content.objects.create(text=text)
-            post = models.Post.objects.create(content=content, task=models.Task.objects.get(post_url.task_id),
+            print("content" + str(content.id))
+
+            post = models.Post.objects.create(content=content, task=models.Task.objects.get(int(post_url.task_id)),
                                               user=user, state=state)
             print("post " + str(post.id))
             post_url.is_ready = True
