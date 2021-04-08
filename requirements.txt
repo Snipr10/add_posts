@@ -12,7 +12,7 @@ djangorestframework~=3.11.0
 idna==2.10
 importlib-metadata==1.7.0
 kombu==4.6.11
-mysqlclient==2.0.1
+# mysqlclient==2.0.1
 pyaes==1.6.1
 pyasn1==0.4.8
 PyJWT==1.7.1
