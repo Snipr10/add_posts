@@ -40,6 +40,7 @@ def start_parsing_url():
                                            is_first=True)
             text = None
             try:
+                beatiful_text = find_value(res, '><div><p>', num_sep_chars=0, separator='</p></div>', is_first=True)
                 text = BeautifulSoup(
                     find_value(res, '><div><p>', num_sep_chars=0, separator='</p></div>', is_first=True)).text
             except Exception:
