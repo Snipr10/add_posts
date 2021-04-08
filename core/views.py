@@ -35,3 +35,14 @@ class Test(generics.RetrieveAPIView):
         return Response("ok")
 
 
+class Task(generics.RetrieveAPIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request, *args, **kwargs):
+        try:
+            models.Task.objects.get(id=6008)
+            return Response("ok")
+        except Exception as e:
+            return Response(e)
+
+
