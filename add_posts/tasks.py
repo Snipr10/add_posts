@@ -78,8 +78,10 @@ def start_parsing_url():
 
             content = models.Content.objects.create(text=text)
             print("content" + str(content.id))
+            task = models.Task.objects.get(int(post_url.task_id))
+            print("task" + str(task.id))
 
-            post = models.Post.objects.create(content=content, task=models.Task.objects.get(int(post_url.task_id)),
+            post = models.Post.objects.create(content=content, task=task,
                                               user=user, state=state)
             print("post " + str(post.id))
             post_url.is_ready = True
