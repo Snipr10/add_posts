@@ -41,9 +41,11 @@ def start_parsing_url():
             text = None
             try:
                 beatiful_text = find_value(res, '><div><p>', num_sep_chars=0, separator='</p></div>', is_first=True)
+                print("beatiful_text")
                 text = BeautifulSoup(
                     find_value(res, '><div><p>', num_sep_chars=0, separator='</p></div>', is_first=True)).text
-            except Exception:
+            except Exception as e:
+                print(e)
                 pass
             if text is None:
                 html = BeautifulSoup(res, 'html')
