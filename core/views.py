@@ -40,7 +40,7 @@ class Task(generics.RetrieveAPIView):
 
     def get(self, request, *args, **kwargs):
         try:
-            # models.Task.objects.get(id=6008)
+            models.Task.objects.filter()
             return Response("ok")
         except Exception as e:
             return Response(e)
