@@ -28,22 +28,19 @@ class Post(generics.CreateAPIView):
         return Response("ok")
 
 
-class Test(generics.RetrieveAPIView):
+class Proxy(generics.CreateAPIView, generics.UpdateAPIView):
     permission_classes = [permissions.AllowAny]
-
-    def get(self, request, *args, **kwargs):
-        from add_posts.tasks import start_parsing_url
-        start_parsing_url()
-        return Response("ok")
+    serializer_class = serializers.ProxySerializer
+    queryset = models.Proxy.objects.all()
 
 
-class Task(generics.RetrieveAPIView):
+class Account(generics.CreateAPIView, generics.UpdateAPIView):
     permission_classes = [permissions.AllowAny]
-
-    def get(self, request, *args, **kwargs):
-        try:
-            return Response("ok"  + str((models.Task.objects.filter().first())))
-        except Exception as e:
-            return Response(e)
+    serializer_class = serializers.AccountSerializer
+    queryset = models.Account.objects.all()
 
 
+class Worker(generics.CreateAPIView):
+    permission_classes = [permissions.AllowAny]
+    serializer_class = serializers.WorkerSerializer
+    # queryset = models.Account.objects.all()

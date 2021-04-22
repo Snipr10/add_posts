@@ -79,3 +79,37 @@ class Proxy(models.Model):
 
     class Meta:
         db_table = 'proxy'
+
+
+class Account(models.Model):
+    login = models.CharField(max_length=1024, null=True, blank=True)
+    password = models.CharField(max_length=1024, null=True, blank=True)
+    available = models.BooleanField(default=True)
+    availability_check = models.DateTimeField(auto_now=True)
+    banned = models.BooleanField(default=True)
+
+    class Meta:
+        db_table = 'accounts'
+
+
+class UserAgent(models.Model):
+    userAgentData = models.CharField(max_length=1024, null=True, blank=True)
+    # windows_size_id = models.IntegerField()
+    supported = models.BooleanField(default=True)
+
+    class Meta:
+        db_table = 'user_agent'
+
+
+class WorkCredentials(models.Model):
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    proxy = models.ForeignKey(Proxy, on_delete=models.CASCADE)
+    user_agent = models.ForeignKey(UserAgent, on_delete=models.CASCADE)
+    inProgress = models.BooleanField(default=False)
+    in_progress_timestamp = models.DateTimeField(default=None, null=True, blank=True)
+    locked = models.BooleanField(default=False)
+    last_time_finished = models.DateTimeField(default=None, null=True, blank=True)
+    alive_timestamp = models.DateTimeField(default=None, null=True, blank=True)
+
+    class Meta:
+        db_table = 'worker_credentials'
