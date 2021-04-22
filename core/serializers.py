@@ -55,6 +55,7 @@ class WorkerSerializer(serializers.ModelSerializer):
         instance = WorkCredentials.objects.create(user_agent = user_agent, account=validated_data["account"],
                                                   proxy=validated_data["proxy"])
         instance.account.available = True
+        instance.account.banned = False
         instance.account.save()
         instance.proxy.available = True
         instance.proxy.save()
