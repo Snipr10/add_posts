@@ -23,6 +23,14 @@ class ProxySerializer(serializers.ModelSerializer):
     attempts = serializers.IntegerField(default=0)
     expirationDate = serializers.DateTimeField()
 
+    def create(self, validated_data):
+        proxies = Proxy.objects.filter(host=validated_data['host'], port=validated_data['port'],
+                                       login=validated_data['login'], password=validated_data['password'])
+        if proxies.exists():
+            return proxies.first()
+        instance = Proxy.objects.create(**validated_data)
+        return instance
+
     class Meta:
         model = Proxy
         fields = (
@@ -52,7 +60,7 @@ class WorkerSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user_agent = UserAgent.objects.filter(supported=True).order_by('?').first()
-        instance = WorkCredentials.objects.create(user_agent = user_agent, account=validated_data["account"],
+        instance = WorkCredentials.objects.create(user_agent=user_agent, account=validated_data["account"],
                                                   proxy=validated_data["proxy"])
         instance.account.available = True
         instance.account.banned = False
