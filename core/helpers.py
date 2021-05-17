@@ -1,10 +1,11 @@
 from django.utils import timezone
 
 from core import models
+from datetime import datetime
 
 
 def get_proxy():
-    proxy = models.Proxy.objects.filter(available=True).order_by("last_time_checked").first()
+    proxy = models.Proxy.objects.filter(available=True, expirationDate__gte=datetime.now()).order_by("last_time_checked").first()
     if proxy is not None:
         proxy.last_time_checked = timezone.now()
         proxy.save()
