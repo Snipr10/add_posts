@@ -1,5 +1,7 @@
 from django.db import models
 
+from datetime import datetime, timedelta
+
 
 class PostUrl(models.Model):
     db_post_url = models.CharField(max_length=100)
@@ -75,7 +77,7 @@ class Proxy(models.Model):
     available = models.BooleanField(default=True)
     last_time_checked = models.DateTimeField(auto_now=True)
     attempts = models.IntegerField(default=24)
-    expirationDate = models.DateTimeField(auto_now=True)
+    expirationDate = models.DateTimeField(default=datetime.now()+timedelta(days=5))
 
     class Meta:
         db_table = 'proxy'

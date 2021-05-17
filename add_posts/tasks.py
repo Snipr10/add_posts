@@ -109,8 +109,7 @@ def update_proxy():
         host = proxy['ip']
         port = proxy['port']
         if not models.Proxy.objects.filter(host=host, port=port).exists():
-            proxies.append(models.Proxy(host=host, port=port, login="test", password="test",
-                                        expirationDate=datetime.now() + timedelta(days=5), attempts=24))
+            proxies.append(models.Proxy(host=host, port=port, login="test", password="test"))
     models.Proxy.objects.bulk_create(proxies, batch_size=200, ignore_conflicts=True)
 
     # TEST PROXY
