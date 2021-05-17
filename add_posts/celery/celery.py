@@ -21,6 +21,6 @@ app.conf.beat_schedule = {
     'update_proxy': {
         'task': 'add_posts.tasks.update_proxy',
         'schedule': crontab(
-            minute='*/5')
+            minute='*/30')
     }
 }
