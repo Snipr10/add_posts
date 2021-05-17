@@ -19,3 +19,11 @@ app.conf.beat_schedule = {
             minute='*/3')
     }
 }
+
+app.conf.beat_schedule = {
+    'update_proxy': {
+        'task': 'add_posts.tasks.update_proxy',
+        'schedule': crontab(
+            minute='*/5')
+    }
+}

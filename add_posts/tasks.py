@@ -1,3 +1,6 @@
+import json
+from datetime import timedelta, datetime
+
 import requests
 
 from add_posts.celery.celery import app
@@ -96,3 +99,30 @@ def start_parsing_url():
                 print(e)
         post_url.is_parsing = False
         post_url.save()
+
+
+@app.task
+def update_proxy():
+    key = "7d15f795aaa03d95f76906983cb78a4c"
+    new_proxy = requests.get("https://api.best-proxies.ru/proxylist.json?key=%s&twitter=1&type=http" % key)
+    proxies = []
+    for proxy in json.loads(new_proxy.text):
+        host = proxy['ip']
+        port = proxy['port']
+        if not models.Proxy.objects.filter(host=host, port=port).exists():
+            proxies.append(models.Proxy(host=host, port=port, login="test", password="test",
+                                        expirationDate=datetime.now() - timedelta(days=5)))
+    models.Proxy.objects.bulk_create(proxies, batch_size=200, ignore_conflicts=True)
+
+    # TEST PROXY
+    # res_er = requests.get("http://www.zahodi-ka.ru/proxy/check/?p=http://181.118.145.146:9991")
+    # res_ok = requests.get("http://www.zahodi-ka.ru/proxy/check/?p=http://181.118.145.146:999")
+    #
+    # if '<er>' in res_er.text:
+    #     print("res_er bad")
+    # if '<ok>' in res_er.text:
+    #     print("res_er ok")
+    # if '<er>' in res_ok.text:
+    #     print("res_ok bad")
+    # if '<ok>' in res_ok.text:
+    #     print("res_ok ok")
