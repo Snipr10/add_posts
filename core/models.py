@@ -74,7 +74,7 @@ class Proxy(models.Model):
     password = models.CharField(max_length=255)
     available = models.BooleanField(default=True)
     last_time_checked = models.DateTimeField(auto_now=True)
-    attempts = models.IntegerField(default=0)
+    attempts = models.IntegerField(default=24)
     expirationDate = models.DateTimeField(auto_now=True)
 
     class Meta:
