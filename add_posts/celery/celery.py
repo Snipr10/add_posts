@@ -17,10 +17,7 @@ app.conf.beat_schedule = {
         'task': 'add_posts.tasks.start_parsing_url',
         'schedule': crontab(
             minute='*/3')
-    }
-}
-
-app.conf.beat_schedule = {
+    },
     'update_proxy': {
         'task': 'add_posts.tasks.update_proxy',
         'schedule': crontab(
