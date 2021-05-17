@@ -22,5 +22,10 @@ app.conf.beat_schedule = {
         'task': 'add_posts.tasks.update_proxy',
         'schedule': crontab(
             minute='*/30')
+    },
+    'delete_bad_worker_credentials': {
+        'task': 'add_posts.tasks.delete_bad_worker_credentials',
+        'schedule': crontab(
+            minute='*/20')
     }
 }

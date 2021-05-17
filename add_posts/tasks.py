@@ -124,3 +124,10 @@ def update_proxy():
     #     print("res_ok bad")
     # if '<ok>' in res_ok.text:
     #     print("res_ok ok")
+
+
+@app.task
+def delete_bad_worker_credentials():
+    for cred in models.WorkCredentials.objects.filter(locked=True):
+        cred.delete()
+    # queryset._raw_delete(queryset.db)
