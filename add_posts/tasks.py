@@ -136,9 +136,10 @@ def delete_bad_worker_credentials():
 
 def check_proxy(url, attempt=0):
     if '<ok>' in requests.get(url).text:
+        print("check_proxy True " + str(attempt))
         return True
     else:
-        print("check_proxy False")
+        print("check_proxy False " +str(attempt))
         if attempt >= 5:
             return False
         else:
