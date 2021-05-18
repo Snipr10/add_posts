@@ -101,6 +101,7 @@ def start_parsing_url():
 
 @app.task
 def update_proxy():
+    print("update_proxy")
     key = "7d15f795aaa03d95f76906983cb78a4c"
     # new_proxy = requests.get("https://api.best-proxies.ru/proxylist.json?key=%s&twitter=1&type=http&speed=1" % key)
     new_proxy = requests.get("https://api.best-proxies.ru/proxylist.json?key=%s&twitter=1&type=http" % key)
@@ -116,6 +117,7 @@ def update_proxy():
 
 @app.task
 def delete_bad_worker_credentials():
+    print("delete")
     for cred in models.WorkCredentials.objects.filter(locked=True):
         try:
             proxy = cred.proxy
