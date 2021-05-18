@@ -121,8 +121,8 @@ def delete_bad_worker_credentials():
     for cred in models.WorkCredentials.objects.filter(locked=True):
         try:
             proxy = cred.proxy
-            if '<ok>' not in requests.get("http://www.zahodi-ka.ru/proxy/check/?p=http://%s:%s" % (proxy.host,
-                                          str(proxy.port))).text:
+            if not check_proxy("http://www.zahodi-ka.ru/proxy/check/?p=http://%s:%s" % (proxy.host,
+                                                                                    str(proxy.port))):
                 account = cred.account
                 account.available = True
                 account.banned = False
@@ -133,17 +133,28 @@ def delete_bad_worker_credentials():
         except Exception:
             pass
 
+
+def check_proxy(url, attempt=0):
+    if '<ok>' in requests.get(url).text:
+        return True
+    else:
+        print("check_proxy False")
+        if attempt >= 5:
+            return False
+        else:
+            return check_proxy(url, attempt + 1)
+
     # TEST PROXY
-        # res_er = requests.get("http://www.zahodi-ka.ru/proxy/check/?p=http://181.118.145.146:9991")
-        # res_ok = requests.get("http://www.zahodi-ka.ru/proxy/check/?p=http://181.118.145.146:999")
-        #
-        # if '<er>' in res_er.text:
-        #     print("res_er bad")
-        # if '<ok>' in res_er.text:
-        #     print("res_er ok")
-        # if '<er>' in res_ok.text:
-        #     print("res_ok bad")
-        # if '<ok>' in res_ok.text:
-        #     print("res_ok ok")
+    # res_er = requests.get("http://www.zahodi-ka.ru/proxy/check/?p=http://181.118.145.146:9991")
+    # res_ok = requests.get("http://www.zahodi-ka.ru/proxy/check/?p=http://181.118.145.146:999")
+    #
+    # if '<er>' in res_er.text:
+    #     print("res_er bad")
+    # if '<ok>' in res_er.text:
+    #     print("res_er ok")
+    # if '<er>' in res_ok.text:
+    #     print("res_ok bad")
+    # if '<ok>' in res_ok.text:
+    #     print("res_ok ok")
 
     # queryset._raw_delete(queryset.db)
