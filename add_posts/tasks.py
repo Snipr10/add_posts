@@ -103,7 +103,7 @@ def start_parsing_url():
 @app.task
 def update_proxy():
     key = "7d15f795aaa03d95f76906983cb78a4c"
-    new_proxy = requests.get("https://api.best-proxies.ru/proxylist.json?key=%s&twitter=1&type=http" % key)
+    new_proxy = requests.get("https://api.best-proxies.ru/proxylist.json?key=%s&twitter=1&type=http&speed=1" % key)
     proxies = []
     for proxy in json.loads(new_proxy.text):
         host = proxy['ip']
