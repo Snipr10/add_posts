@@ -112,22 +112,35 @@ def update_proxy():
             proxies.append(models.Proxy(host=host, port=port, login="test", password="test"))
     models.Proxy.objects.bulk_create(proxies, batch_size=200, ignore_conflicts=True)
 
-    # TEST PROXY
-    # res_er = requests.get("http://www.zahodi-ka.ru/proxy/check/?p=http://181.118.145.146:9991")
-    # res_ok = requests.get("http://www.zahodi-ka.ru/proxy/check/?p=http://181.118.145.146:999")
-    #
-    # if '<er>' in res_er.text:
-    #     print("res_er bad")
-    # if '<ok>' in res_er.text:
-    #     print("res_er ok")
-    # if '<er>' in res_ok.text:
-    #     print("res_ok bad")
-    # if '<ok>' in res_ok.text:
-    #     print("res_ok ok")
-
 
 @app.task
 def delete_bad_worker_credentials():
     for cred in models.WorkCredentials.objects.filter(locked=True):
-        cred.delete()
+        try:
+            proxy = cred.proxy
+            if '<ok>' not in requests.get("http://www.zahodi-ka.ru/proxy/check/?p=http://%s:%s" % (proxy.host,
+                                          str(proxy.port))).text:
+                account = cred.account
+                account.available = True
+                account.banned = False
+                account.save()
+                proxy.available = False
+                proxy.save()
+            cred.delete()
+        except Exception:
+            pass
+
+    # TEST PROXY
+        # res_er = requests.get("http://www.zahodi-ka.ru/proxy/check/?p=http://181.118.145.146:9991")
+        # res_ok = requests.get("http://www.zahodi-ka.ru/proxy/check/?p=http://181.118.145.146:999")
+        #
+        # if '<er>' in res_er.text:
+        #     print("res_er bad")
+        # if '<ok>' in res_er.text:
+        #     print("res_er ok")
+        # if '<er>' in res_ok.text:
+        #     print("res_ok bad")
+        # if '<ok>' in res_ok.text:
+        #     print("res_ok ok")
+
     # queryset._raw_delete(queryset.db)
