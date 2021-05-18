@@ -23,7 +23,6 @@ def start_parsing_url():
     post_url = \
         models.PostUrl.objects.filter(is_ready=False, is_successful=True,
                                       is_parsing=False).order_by('added_date').first()
-    print("post_url" + str(post_url.id))
     if post_url is not None:
         post_url.is_parsing = True
         post_url.save()
