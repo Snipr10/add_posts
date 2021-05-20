@@ -65,7 +65,8 @@ class WorkerSerializer(serializers.ModelSerializer):
         instance.account.available = True
         instance.account.banned = False
         instance.account.save()
-        instance.proxy.available = True
+        # not use this proxy in prod now
+        instance.proxy.available = False
         instance.proxy.save()
         return instance
 

@@ -11,7 +11,7 @@ urlpatterns = [
 
     path("worker/", views.Worker.as_view()),
 
-    path("worker/", views.Post.as_view()),
+    # path("worker/", views.Post.as_view()),
 
 
 ]
