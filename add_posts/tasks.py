@@ -120,8 +120,9 @@ def delete_bad_worker_credentials():
     for cred in models.WorkCredentials.objects.filter(locked=True):
         try:
             proxy = cred.proxy
-            if not check_proxy("http://www.zahodi-ka.ru/proxy/check/?p=http://%s:%s" % (proxy.host,
-                                                                                        str(proxy.port))):
+            if proxy.login == "sergmga_gmail_com" or \
+                    not check_proxy("http://www.zahodi-ka.ru/proxy/check/?p=http://%s:%s" % (proxy.host,
+                                                                                             str(proxy.port))):
                 account = cred.account
                 account.available = True
                 account.banned = False
