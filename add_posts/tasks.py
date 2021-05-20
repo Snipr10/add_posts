@@ -103,8 +103,7 @@ def start_parsing_url():
 def update_proxy():
     print("update_proxy")
     key = "7d15f795aaa03d95f76906983cb78a4c"
-    # new_proxy = requests.get("https://api.best-proxies.ru/proxylist.json?key=%s&twitter=1&type=http&speed=1" % key)
-    new_proxy = requests.get("https://api.best-proxies.ru/proxylist.json?key=%s&twitter=1&type=http" % key)
+    new_proxy = requests.get("https://api.best-proxies.ru/proxylist.json?key=%s&twitter=1&type=http&speed=1" % key)
 
     proxies = []
     for proxy in json.loads(new_proxy.text):
@@ -122,7 +121,7 @@ def delete_bad_worker_credentials():
         try:
             proxy = cred.proxy
             if not check_proxy("http://www.zahodi-ka.ru/proxy/check/?p=http://%s:%s" % (proxy.host,
-                                                                                    str(proxy.port))):
+                                                                                        str(proxy.port))):
                 account = cred.account
                 account.available = True
                 account.banned = False
@@ -139,7 +138,7 @@ def check_proxy(url, attempt=0):
         print("check_proxy True " + str(attempt))
         return True
     else:
-        print("check_proxy False " +str(attempt))
+        print("check_proxy False " + str(attempt))
         if attempt >= 5:
             return False
         else:
