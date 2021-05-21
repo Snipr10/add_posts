@@ -221,6 +221,8 @@ def check_accounts(email, password, attempt=0):
             return False
     except Exception:
         if attempt < 5:
+            print("account Exception " + email)
+
             return check_accounts(email, password, attempt + 1)
         else:
             print("account Exception disable " + email)
