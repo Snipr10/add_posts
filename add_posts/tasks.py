@@ -102,7 +102,7 @@ def start_parsing_url():
 @app.task
 def update_proxy():
     print("update_proxy")
-    key = models.Settings.objects.all().first().proxykey
+    key = models.Keys.objects.all().first().proxykey
     new_proxy = requests.get("https://api.best-proxies.ru/proxylist.json?key=%s&twitter=1&type=http&speed=1" % key)
 
     proxies = []
