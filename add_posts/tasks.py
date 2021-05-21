@@ -134,6 +134,17 @@ def delete_bad_worker_credentials():
             pass
 
 
+@app.task
+def check_not_available_accounts():
+    for account in models.Account.objects.filter(available=False):
+        print("account.id")
+        print(account.id)
+        if check_accounts(account.login, account.password, attempt=0):
+            account.available = True
+            account.banned = False
+            account.save()
+
+
 def check_proxy(url, attempt=0):
     if '<ok>' in requests.get(url).text:
         print("check_proxy True " + str(attempt))
@@ -159,3 +170,52 @@ def check_proxy(url, attempt=0):
     #     print("res_ok ok")
 
     # queryset._raw_delete(queryset.db)
+
+
+def get_available_proxy():
+    proxy = get_proxy()
+    if proxy is not None:
+        if check_proxy("http://www.zahodi-ka.ru/proxy/check/?p=http://%s:%s" % (proxy.host,
+                                                                                str(proxy.port))):
+            return proxy
+        else:
+            return get_available_proxy()
+    else:
+        return None
+
+
+def check_accounts(email, password, attempt=0):
+    session = requests.session()
+    session.headers.update({
+        'User-Agent': 'Mozilla/5.0 (X11; Linux i686; rv:39.0) Gecko/20100101 Firefox/39.0'
+    })
+
+    proxy = get_available_proxy()
+    if proxy is None:
+        return
+    print("proxy.id")
+    print(proxy.id)
+    proxy_str = f"{proxy.login}:{proxy.password}@{proxy.host}:{proxy.port}"
+    print(proxy_str)
+    proxies = {'http': f'http://{proxy_str}', 'https': f'https://{proxy_str}'}
+    try:
+        session.proxies.update(proxies)
+        response = session.get('https://m.facebook.com')
+
+        # login to Facebook
+        response = session.post('https://m.facebook.com/login.php', data={
+            'email': email,
+            'pass': password
+        }, allow_redirects=False)
+
+        # If c_user cookie is present, login was successful
+        if 'c_user' in response.cookies:
+            print('c_user')
+            return True
+        else:
+            return False
+    except Exception:
+        if attempt < 5:
+            return check_accounts(email, password, attempt + 1)
+        else:
+            return False
