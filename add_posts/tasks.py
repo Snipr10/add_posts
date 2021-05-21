@@ -177,11 +177,11 @@ def get_available_proxy():
         "id").last()
 
     if proxy is not None:
-        if check_proxy("http://www.zahodi-ka.ru/proxy/check/?p=http://%s:%s" % (proxy.host,
-                                                                                str(proxy.port))):
-            return proxy
-        else:
-            return get_available_proxy()
+        # if check_proxy("http://www.zahodi-ka.ru/proxy/check/?p=http://%s:%s" % (proxy.host,
+        #                                                                         str(proxy.port))):
+        return proxy
+        # else:
+        #     return get_available_proxy()
     else:
         return None
 
