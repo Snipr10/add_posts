@@ -212,12 +212,15 @@ def check_accounts(email, password, attempt=0):
 
         # If c_user cookie is present, login was successful
         if 'c_user' in response.cookies:
-            print('c_user')
+            print("account ok " + email)
             return True
         else:
+            print("account disable " + email)
+
             return False
     except Exception:
         if attempt < 5:
             return check_accounts(email, password, attempt + 1)
         else:
+            print("account Exception disable " + email)
             return False
