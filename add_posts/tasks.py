@@ -221,7 +221,7 @@ def check_accounts(account, attempt=0):
             account.banned = False
             account.save()
             try:
-                models.WorkCredentials.objects.create(account=account, proxy=proxy,
+                models.WorkCredentials.objects.create(account=account, proxy=proxy, locked=False,
                                                       user_agent=models.UserAgent.objects.filter(supported=True)
                                                       .order_by('?').first()
                 )
