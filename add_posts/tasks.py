@@ -220,6 +220,8 @@ def check_accounts(email, password, attempt=0):
 
             return False
     except Exception:
+        proxy.available = False
+        proxy.save()
         if attempt < 5:
             print("account Exception " + email)
 
