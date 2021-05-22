@@ -140,10 +140,7 @@ def check_not_available_accounts():
     for account in models.Account.objects.filter(available=False).order_by("-id"):
         print("account.id")
         print(account.id)
-        if check_accounts(account.login, account.password, attempt=0):
-            account.available = True
-            account.banned = False
-            account.save()
+        check_accounts(account, attempt=0)
 
 
 def check_proxy(url, attempt=0):
@@ -174,9 +171,11 @@ def check_proxy(url, attempt=0):
 
 
 def get_available_proxy():
-    proxy = models.Proxy.objects.filter(available=True, expirationDate__gte=datetime.now()).order_by(
+    proxies = models.WorkCredentials.objects.all().values_list('proxy', flat=True)
+    proxy = models.Proxy.objects.filter(available=True, expirationDate__gte=datetime.now())\
+        .exclude(id__in=proxies).order_by(
         "id").last()
-
+    print("PROXY " + str(proxy))
     if proxy is not None:
         # if check_proxy("http://www.zahodi-ka.ru/proxy/check/?p=http://%s:%s" % (proxy.host,
         #                                                                         str(proxy.port))):
@@ -187,7 +186,8 @@ def get_available_proxy():
         return None
 
 
-def check_accounts(email, password, attempt=0):
+def check_accounts(account, attempt=0):
+    email, password = account.login, account.password
     session = requests.session()
     session.headers.update({
         'User-Agent': 'Mozilla/5.0 (X11; Linux i686; rv:39.0) Gecko/20100101 Firefox/39.0'
@@ -214,6 +214,13 @@ def check_accounts(email, password, attempt=0):
         # If c_user cookie is present, login was successful
         if 'c_user' in response.cookies:
             print("account ok " + email)
+            account.available = True
+            account.banned = False
+            account.save()
+            try:
+                models.WorkCredentials.objects.create(account=account, proxy=proxy)
+            except Exception:
+                print("cannot create WorkCredentials ")
             return True
         else:
             print("account disable " + email)
