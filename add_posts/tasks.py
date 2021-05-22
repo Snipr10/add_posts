@@ -188,7 +188,8 @@ def get_available_proxy():
 
 
 def check_accounts(account, attempt=0):
-    email, password = account.login, account.password
+    email = account.login
+    password = account.password
     session = requests.session()
     session.headers.update({
         'User-Agent': 'Mozilla/5.0 (X11; Linux i686; rv:39.0) Gecko/20100101 Firefox/39.0'
@@ -213,13 +214,17 @@ def check_accounts(account, attempt=0):
         }, allow_redirects=False)
 
         # If c_user cookie is present, login was successful
+        print("check cookies")
         if 'c_user' in response.cookies:
             print("account ok " + email)
             account.available = True
             account.banned = False
             account.save()
             try:
-                models.WorkCredentials.objects.create(account=account, proxy=proxy)
+                models.WorkCredentials.objects.create(account=account, proxy=proxy,
+                                                      user_agent=models.UserAgent.objects.filter(supported=True)
+                                                      .order_by('?').first()
+                )
             except Exception:
                 print("cannot create WorkCredentials ")
             return True
