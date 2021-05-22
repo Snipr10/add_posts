@@ -175,7 +175,7 @@ def get_available_proxy():
     print(proxies)
     proxy = models.Proxy.objects.filter(available=True, expirationDate__gte=datetime.now())\
         .exclude(id__in=proxies).order_by(
-        "id").last()
+        "last_time_checked").last()
     print("PROXY " + str(proxy))
     if proxy is not None:
         # if check_proxy("http://www.zahodi-ka.ru/proxy/check/?p=http://%s:%s" % (proxy.host,
