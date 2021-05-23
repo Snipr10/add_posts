@@ -29,7 +29,7 @@ def start_parsing_url():
         res = None
         try:
             print(post_url.db_post_url)
-            res = requests.get(post_url.db_post_url, proxies=proxies, headers=headers).text
+            res = requests.get(post_url.db_post_url, proxies=proxies, headers=headers, timeout=60).text
             owner_fb_id = find_value(res, '",id:', num_sep_chars=1, separator='"')
             if owner_fb_id is None:
                 owner_fb_id = find_value(res, ';id=', num_sep_chars=0, separator='&')
@@ -103,7 +103,8 @@ def start_parsing_url():
 def update_proxy():
     print("update_proxy")
     key = models.Keys.objects.all().first().proxykey
-    new_proxy = requests.get("https://api.best-proxies.ru/proxylist.json?key=%s&twitter=1&type=http&speed=1" % key)
+    new_proxy = requests.get("https://api.best-proxies.ru/proxylist.json?key=%s&twitter=1&type=http&speed=1" % key,
+                             timeout=60)
 
     proxies = []
     for proxy in json.loads(new_proxy.text):
@@ -144,7 +145,7 @@ def check_not_available_accounts():
 
 
 def check_proxy(url, attempt=0):
-    if '<ok>' in requests.get(url).text:
+    if '<ok>' in requests.get(url, timeout=60).text:
         print("check_proxy True " + str(attempt))
         return True
     else:
@@ -205,7 +206,7 @@ def check_accounts(account, attempt=0):
     proxies = {'http': f'http://{proxy_str}', 'https': f'https://{proxy_str}'}
     try:
         session.proxies.update(proxies)
-        response = session.get('https://m.facebook.com')
+        response = session.get('https://m.facebook.com', timeout=60)
 
         # login to Facebook
         response = session.post('https://m.facebook.com/login.php', data={
