@@ -138,7 +138,7 @@ def delete_bad_worker_credentials():
 @app.task
 def check_not_available_accounts():
     # maybe 100 ??
-    for account in models.Account.objects.filter(available=False).order_by("-id"):
+    for account in models.Account.objects.filter(available=False).order_by("-id")[:500]:
         print("account.id")
         print(account.id)
         check_accounts(account, attempt=0)

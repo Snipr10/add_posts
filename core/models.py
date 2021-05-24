@@ -64,7 +64,6 @@ class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     stat = models.ForeignKey(PostStat, on_delete=models.CASCADE, null=True)
 
-
     class Meta:
         db_table = 'posts'
 
