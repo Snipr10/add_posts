@@ -173,7 +173,7 @@ def check_proxy(url, attempt=0):
 
 def get_available_proxy():
     proxies = models.WorkCredentials.objects.all().values_list('proxy', flat=True)
-    proxy = models.Proxy.objects.filter(available=True) \
+    proxy = models.Proxy.objects.filter() \
         .exclude(id__in=proxies).order_by(
         "last_time_checked").last()
     if proxy is not None:
