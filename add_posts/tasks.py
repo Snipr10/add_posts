@@ -182,19 +182,18 @@ def get_available_proxy():
             session.headers.update({
                 'User-Agent': 'Mozilla/5.0 (X11; Linux i686; rv:39.0) Gecko/20100101 Firefox/39.0'
             })
-
+            print(proxy.id)
             proxy_str = f"{proxy.login}:{proxy.password}@{proxy.host}:{proxy.port}"
             proxies = {'http': f'http://{proxy_str}', 'https': f'https://{proxy_str}'}
 
             session.proxies.update(proxies)
-            response = session.get('https://m.facebook.com', timeout=30)
-            print(proxy.id)
+            response = session.get('https://m.facebook.com', timeout=10)
             if response.ok:
-                response = session.get('https://m.facebook.com', timeout=30)
+                response = session.get('https://m.facebook.com', timeout=10)
                 response = session.post('https://m.facebook.com/login.php', data={
                     'email': '79622767100',
                     'pass': 'fKIEgKIEud89096'
-                }, allow_redirects=False, timeout=30)
+                }, allow_redirects=False, timeout=10)
 
                 if 'c_user' in response.cookies:
                     start_page = session.get('https://www.facebook.com/')
