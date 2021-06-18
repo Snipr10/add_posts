@@ -182,7 +182,7 @@ def get_available_proxy():
             session.headers.update({
                 'User-Agent': 'Mozilla/5.0 (X11; Linux i686; rv:39.0) Gecko/20100101 Firefox/39.0'
             })
-            print(proxy.id)
+            print(proxy)
             proxy_str = f"{proxy.login}:{proxy.password}@{proxy.host}:{proxy.port}"
             proxies = {'http': f'http://{proxy_str}', 'https': f'https://{proxy_str}'}
 
