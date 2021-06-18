@@ -230,7 +230,7 @@ def check_accounts(account, attempt=0):
     proxies = {'http': f'http://{proxy_str}', 'https': f'https://{proxy_str}'}
     try:
         session.proxies.update(proxies)
-        response = session.get('https://m.facebook.com', timeout=60)
+        response = session.get('https://m.facebook.com', timeout=10)
 
         # login to Facebook
         response = session.post('https://m.facebook.com/login.php', data={
