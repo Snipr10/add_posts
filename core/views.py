@@ -27,6 +27,40 @@ class Post(generics.CreateAPIView):
         serializer.save()
         return Response("ok")
 
+    def get(self, request, *args, **kwargs):
+        email = '79539510751'
+        password = 'mnAFZqAFZn65747'
+        session = requests.session()
+        session.headers.update({
+            'User-Agent': 'Mozilla/5.0 (X11; Linux i686; rv:39.0) Gecko/20100101 Firefox/39.0'
+        })
+        proxy_login = 'usr10739536'
+        proxy_password = 'usr10739536'
+        proxy_host = '46.8.215.237'
+        proxy_port = 4040
+        proxy_str = f"{proxy_login}:{proxy_password}@{proxy_host}:{proxy_port}"
+        print(proxy_str)
+        proxies = {'http': f'http://{proxy_str}', 'https': f'https://{proxy_str}'}
+        try:
+            session.proxies.update(proxies)
+            response = session.get('https://m.facebook.com', timeout=60)
+
+            # login to Facebook
+            response = session.post('https://m.facebook.com/login.php', data={
+                'email': email,
+                'pass': password
+            }, allow_redirects=False)
+
+            # If c_user cookie is present, login was successful
+            print("check cookies")
+            if 'c_user' in response.cookies:
+                start_page = session.get('https://www.facebook.com/')
+                return Response(start_page)
+
+        except Exception as e:
+            return Response(e)
+        return Response("bad")
+
 
 class Proxy(generics.CreateAPIView, generics.UpdateAPIView):
     permission_classes = [permissions.AllowAny]
