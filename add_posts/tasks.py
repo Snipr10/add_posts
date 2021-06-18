@@ -172,6 +172,7 @@ def check_proxy(url, attempt=0):
 
 
 def get_available_proxy():
+    # available = True
     proxies = models.WorkCredentials.objects.all().values_list('proxy', flat=True)
     proxy = models.Proxy.objects.filter() \
         .exclude(id__in=proxies).order_by(
@@ -240,23 +241,27 @@ def check_accounts(account, attempt=0):
 
         # If c_user cookie is present, login was successful
         print("check cookies")
-        if 'c_user' in response.cookies:
-            start_page = session.get('https://www.facebook.com/')
-            if 'checkpoint' not in start_page.url:
-                print("account ok " + email)
-                account.available = True
+        if response.ok:
+            if'c_user' in response.cookies:
+                start_page = session.get('https://www.facebook.com/')
+                if 'checkpoint' not in start_page.url:
+                    print("account ok " + email)
+                    account.available = True
+                    account.banned = False
+                    account.save()
+                    try:
+                        models.WorkCredentials.objects.create(account=account, proxy=proxy, locked=False,
+                                                              user_agent=models.UserAgent.objects.filter(supported=True)
+                                                              .order_by('?').first()
+                                                              )
+                    except Exception:
+                        print("cannot create WorkCredentials ")
+                    return True
+                print("account disable " + email)
+            else:
                 account.banned = False
                 account.save()
-                try:
-                    models.WorkCredentials.objects.create(account=account, proxy=proxy, locked=False,
-                                                          user_agent=models.UserAgent.objects.filter(supported=True)
-                                                          .order_by('?').first()
-                                                          )
-                except Exception:
-                    print("cannot create WorkCredentials ")
-                return True
-            print("account disable " + email)
-            return False
+        return False
     except Exception:
         proxy.available = False
         proxy.save()
