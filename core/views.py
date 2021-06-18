@@ -55,7 +55,7 @@ class Post(generics.CreateAPIView):
             print("check cookies")
             if 'c_user' in response.cookies:
                 start_page = session.get('https://www.facebook.com/')
-                return Response(start_page)
+                return Response(start_page.url)
 
         except Exception as e:
             return Response(e)
