@@ -188,6 +188,7 @@ def get_available_proxy():
 
             session.proxies.update(proxies)
             response = session.get('https://m.facebook.com', timeout=30)
+            print(proxy.id)
             if response.ok:
                 response = session.get('https://m.facebook.com', timeout=30)
                 response = session.post('https://m.facebook.com/login.php', data={
@@ -201,7 +202,8 @@ def get_available_proxy():
                         return proxy
             # if check_proxy("http://www.zahodi-ka.ru/proxy/check/?p=http://%s:%s" % (proxy.host,
             #                                                                         str(proxy.port))):
-        except Exception:
+        except Exception as e:
+            print(e)
             pass
         proxy.delete()
         return get_available_proxy()
