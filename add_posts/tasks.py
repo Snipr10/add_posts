@@ -173,15 +173,35 @@ def check_proxy(url, attempt=0):
 
 def get_available_proxy():
     proxies = models.WorkCredentials.objects.all().values_list('proxy', flat=True)
-    print(proxies)
     proxy = models.Proxy.objects.filter(available=True, expirationDate__gte=datetime.now()) \
         .exclude(id__in=proxies).order_by(
         "last_time_checked").last()
-    print("PROXY " + str(proxy))
     if proxy is not None:
+        session = requests.session()
+        session.headers.update({
+            'User-Agent': 'Mozilla/5.0 (X11; Linux i686; rv:39.0) Gecko/20100101 Firefox/39.0'
+        })
+
+        proxy_str = f"{proxy.login}:{proxy.password}@{proxy.host}:{proxy.port}"
+        proxies = {'http': f'http://{proxy_str}', 'https': f'https://{proxy_str}'}
+
+        session.proxies.update(proxies)
+        response = session.get('https://m.facebook.com', timeout=30)
+        if response.ok:
+            response = session.get('https://m.facebook.com', timeout=30)
+            response = session.post('https://m.facebook.com/login.php', data={
+                'email': '79622767100',
+                'pass': 'fKIEgKIEud89096'
+            }, allow_redirects=False, timeout=30)
+
+            if 'c_user' in response.cookies:
+                start_page = session.get('https://www.facebook.com/')
+                if 'checkpoint' not in start_page.url:
+                    return proxy
         # if check_proxy("http://www.zahodi-ka.ru/proxy/check/?p=http://%s:%s" % (proxy.host,
         #                                                                         str(proxy.port))):
-        return proxy
+        proxy.delete()
+        return get_available_proxy()
         # else:
         #     return get_available_proxy()
     else:

@@ -28,6 +28,8 @@ class Post(generics.CreateAPIView):
         return Response("ok")
 
     def get(self, request, *args, **kwargs):
+        from add_posts.tasks import get_available_proxy
+        return Response(get_available_proxy().id)
         email = '79539510751'
         password = 'mnAFZqAFZn65747'
         session = requests.session()
