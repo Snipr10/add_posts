@@ -273,11 +273,12 @@ def check_accounts(account, attempt=0):
             print("account Exception disable " + email)
             return False
 
+
 @app.task
 def delete_old_proxy():
     for proxy in models.Proxy.objects.filter(expirationDate__lte=datetime.now()):
         try:
-            if not models.WorkCredentials.objects.create(proxy=proxy, locked=False).exists():
+            if not models.WorkCredentials.objects.filter(proxy=proxy, locked=False).exists():
                 proxy.delete()
         except Exception:
             pass
