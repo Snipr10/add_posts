@@ -18,11 +18,11 @@ app.conf.beat_schedule = {
         'schedule': crontab(
             minute='*/3')
     },
-    # 'update_proxy': {
-    #     'task': 'add_posts.tasks.update_proxy',
-    #     'schedule': crontab(
-    #         minute='*/2')
-    # },
+    'update_proxy': {
+        'task': 'add_posts.tasks.update_proxy',
+        'schedule': crontab(
+            minute='*/2')
+    },
     'delete_bad_worker_credentials': {
         'task': 'add_posts.tasks.delete_bad_worker_credentials',
         'schedule': crontab(
@@ -33,11 +33,11 @@ app.conf.beat_schedule = {
         'schedule': crontab(
             minute='*/3')
     },
-    'delete_old_proxy': {
-        'task': 'add_posts.tasks.delete_old_proxy',
-        'schedule': crontab(
-            minute='*/10')
-    }
+    # 'delete_old_proxy': {
+    #     'task': 'add_posts.tasks.delete_old_proxy',
+    #     'schedule': crontab(
+    #         minute='*/10')
+    # }
 
 
 }
