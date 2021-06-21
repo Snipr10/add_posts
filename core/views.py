@@ -8,7 +8,8 @@ from rest_framework import generics, permissions
 from rest_framework.response import Response
 from bs4 import BeautifulSoup
 
-from add_posts.tasks import generate_proxy_session, check_facebook_url, check_proxy_available_for_facebook
+from add_posts.tasks import generate_proxy_session, check_facebook_url, check_proxy_available_for_facebook, \
+    get_available_proxy
 from core import serializers, models
 
 
@@ -31,18 +32,8 @@ class Post(generics.CreateAPIView):
         return Response("ok")
 
     def get(self, request, *args, **kwargs):
-        from add_posts.tasks import get_available_proxy
-        key = 'd73007770373106ac0256675c604bc22'
-        new_proxy = requests.get("https://api.best-proxies.ru/proxylist.json?key=%s&twitter=1&type=http&speed=1" % key,
-                                 timeout=60)
-        for proxy in json.loads(new_proxy.text):
-            host = proxy['ip']
-            port = proxy['port']
-            session = generate_proxy_session('test', 'test', host, port)
-            if check_facebook_url(session):
-                s = check_proxy_available_for_facebook(session)
-                print(s)
-
+        proxy = get_available_proxy()
+        return Response(proxy)
 
 class Proxy(generics.CreateAPIView, generics.UpdateAPIView, generics.ListAPIView):
     permission_classes = [permissions.AllowAny]

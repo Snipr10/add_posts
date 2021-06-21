@@ -133,7 +133,7 @@ def generate_proxy_session(proxy_login, proxy_password, proxy_host, proxy_port):
 
 def check_facebook_url(session):
     try:
-        response = session.get('https://m.facebook.com', timeout=10)
+        response = session.get('https://m.facebook.com', timeout=15)
         if response.ok:
             return True
     except Exception:
