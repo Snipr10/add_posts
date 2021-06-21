@@ -231,10 +231,12 @@ def get_available_proxy():
     proxy = models.Proxy.objects.filter() \
         .exclude(id__in=proxies, available=True, port=8080).order_by(
         "last_time_checked").last()
+    print(proxy.id)
     if proxy is not None:
         try:
             session = generate_proxy_session(proxy.login, proxy.password, proxy.host, proxy.port)
             if check_facebook_url(session):
+                print("ok")
                 return proxy
         except Exception as e:
             print(e)
