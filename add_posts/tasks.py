@@ -169,6 +169,7 @@ def check_proxy_available_for_facebook(session):
             # 'pass': password
         }, allow_redirects=False, timeout=10)
         start_page = session.get('https://www.facebook.com/', timeout=10)
+        print(start_page)
         if 'login/?privacy_mutation_token' in start_page.url:
             account.banned = True
             account.save()
