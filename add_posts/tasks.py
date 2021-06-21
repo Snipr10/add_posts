@@ -113,8 +113,9 @@ def update_proxy():
         session = generate_proxy_session('test', 'test', host, port)
         if not models.Proxy.objects.filter(host=host, port=port).exists():
             if check_facebook_url(session):
-                if check_proxy_available_for_facebook(session):
-                    proxies.append(models.Proxy(host=host, port=port, login="test", password="test"))
+                if port == '8080':
+                    if check_proxy_available_for_facebook(session):
+                        proxies.append(models.Proxy(host=host, port=port, login="test", password="test"))
     models.Proxy.objects.bulk_create(proxies, batch_size=200, ignore_conflicts=True)
 
 
@@ -174,16 +175,15 @@ def delete_bad_worker_credentials():
     print("delete")
     for cred in models.WorkCredentials.objects.filter(locked=True):
         try:
-            proxy = cred.proxy
-            if proxy.login == "sergmga_gmail_com" or \
-                    not check_proxy("http://www.zahodi-ka.ru/proxy/check/?p=http://%s:%s" % (proxy.host,
-                                                                                             str(proxy.port))):
-                account = cred.account
-                account.available = True
-                account.banned = False
-                account.save()
-                proxy.available = False
-                proxy.save()
+            # if proxy.login == "sergmga_gmail_com" or \
+            #         not check_proxy("http://www.zahodi-ka.ru/proxy/check/?p=http://%s:%s" % (proxy.host,
+            #                                                                                  str(proxy.port))):
+            account = cred.account
+            account.available = False
+            account.banned = False
+            account.save()
+            #     proxy.available = False
+            #     proxy.save()
             cred.delete()
         except Exception:
             pass
@@ -229,7 +229,7 @@ def get_available_proxy():
     # available = True
     proxies = models.WorkCredentials.objects.all().values_list('proxy', flat=True)
     proxy = models.Proxy.objects.filter() \
-        .exclude(id__in=proxies, available=True).order_by(
+        .exclude(id__in=proxies, available=True, port=8080).order_by(
         "last_time_checked").last()
     if proxy is not None:
         try:
