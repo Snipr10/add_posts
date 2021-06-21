@@ -241,7 +241,11 @@ def get_available_proxy():
         except Exception as e:
             print(e)
             pass
-        proxy.delete()
+        try:
+            proxy.delete()
+        except Exception:
+            proxy.available=True
+            proxy.save()
         return get_available_proxy()
         # else:
         #     return get_available_proxy()
