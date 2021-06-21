@@ -10,8 +10,6 @@ urlpatterns = [
     path("account/<int:pk>/", views.Account.as_view()),
 
     path("worker/", views.Worker.as_view()),
-
-    # path("worker/", views.Post.as_view()),
-
+    path("proxy/", views.Proxy.as_view()),
 
 ]

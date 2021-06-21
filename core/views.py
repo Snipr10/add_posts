@@ -44,7 +44,7 @@ class Post(generics.CreateAPIView):
                 print(s)
 
 
-class Proxy(generics.CreateAPIView, generics.UpdateAPIView):
+class Proxy(generics.CreateAPIView, generics.UpdateAPIView, generics.ListAPIView):
     permission_classes = [permissions.AllowAny]
     serializer_class = serializers.ProxySerializer
     queryset = models.Proxy.objects.all()
@@ -60,3 +60,5 @@ class Worker(generics.CreateAPIView):
     permission_classes = [permissions.AllowAny]
     serializer_class = serializers.WorkerSerializer
     # queryset = models.Account.objects.all()
+
+
