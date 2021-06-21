@@ -229,8 +229,8 @@ def check_proxy(url, attempt=0):
 def get_available_proxy():
     # available = True
     proxies = models.WorkCredentials.objects.all().values_list('proxy', flat=True)
-    proxy = models.Proxy.objects.filter() \
-        .exclude(id__in=proxies, available=True, port=8080).order_by(
+    proxy = models.Proxy.objects.filter(available=True, port=8080) \
+        .exclude(id__in=proxies).order_by(
         "last_time_checked").last()
     print("proxy.id")
     print(proxy.id)
