@@ -33,7 +33,7 @@ class Post(generics.CreateAPIView):
 
     def get(self, request, *args, **kwargs):
         account_id = int(request.GET['id'])
-        account = models.Account.get(id=account_id)
+        account = models.Account.objects.get(id=account_id)
         proxy = get_available_proxy()
         email = account.login
         password = account.password
