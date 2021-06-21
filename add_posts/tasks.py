@@ -257,6 +257,8 @@ def get_available_proxy():
             session = generate_proxy_session(proxy.login, proxy.password, proxy.host, proxy.port)
             if check_facebook_url(session):
                 print("ok")
+                proxy.last_time_checked=datetime.now()
+                proxy.save()
                 return proxy
         except Exception as e:
             pass
