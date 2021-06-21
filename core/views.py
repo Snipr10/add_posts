@@ -59,10 +59,11 @@ class Post(generics.CreateAPIView):
                 if 'checkpoint' not in start_page.url:
                     print("ok")
                     try:
-                        models.WorkCredentials.objects.create(account=account, proxy=proxy, locked=False,
+                        W = models.WorkCredentials.objects.create(account=account, proxy=proxy, locked=False,
                                                               user_agent=models.UserAgent.objects.filter(supported=True)
                                                               .order_by('?').first()
                                                               )
+                        print(W.id)
                     except Exception:
                         print("cannot create WorkCredentials ")
         return Response(proxy.id)
