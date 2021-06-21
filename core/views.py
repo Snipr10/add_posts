@@ -32,9 +32,30 @@ class Post(generics.CreateAPIView):
         return Response("ok")
 
     def get(self, request, *args, **kwargs):
-        account_id = request.GET['id']
-        # proxy = get_available_proxy()
-        return Response(account_id)
+        account_id = int(request.GET['id'])
+        account = models.Account.get(id=account_id)
+        proxy = get_available_proxy()
+        email = account.login
+        password = account.password
+        session = generate_proxy_session(proxy.login, proxy.password, proxy.host, proxy.port)
+        response = session.get('https://m.facebook.com', timeout=10)
+
+        # login to Facebook
+        response = session.post('https://m.facebook.com/login.php', data={
+            'email': email,
+            'pass': password
+        }, allow_redirects=False)
+
+        # If c_user cookie is present, login was successful
+        print("check cookies")
+        print(response.ok)
+        if response.ok:
+            if'c_user' in response.cookies:
+                start_page = session.get('https://www.facebook.com/')
+                print(start_page.url)
+                if 'checkpoint' not in start_page.url:
+                    print("ok")
+        return Response(proxy.id)
 
 class Proxy(generics.CreateAPIView, generics.UpdateAPIView, generics.ListAPIView):
     permission_classes = [permissions.AllowAny]
