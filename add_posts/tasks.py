@@ -247,7 +247,7 @@ def get_available_proxy():
         except Exception as e:
             proxy.available = False
             proxy.save()
-        p
+
         return get_available_proxy()
         # else:
         #     return get_available_proxy()
