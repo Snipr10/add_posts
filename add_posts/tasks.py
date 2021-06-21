@@ -1,6 +1,6 @@
 import json
+import random
 from datetime import timedelta, datetime
-from random import random
 
 import requests
 
