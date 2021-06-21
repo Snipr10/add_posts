@@ -1,5 +1,6 @@
 import json
 from datetime import timedelta, datetime
+from random import random
 
 import requests
 
@@ -105,14 +106,63 @@ def update_proxy():
     key = models.Keys.objects.all().first().proxykey
     new_proxy = requests.get("https://api.best-proxies.ru/proxylist.json?key=%s&twitter=1&type=http&speed=1" % key,
                              timeout=60)
-
     proxies = []
     for proxy in json.loads(new_proxy.text):
         host = proxy['ip']
         port = proxy['port']
+        session = generate_proxy_session('test', 'test', host, port)
         if not models.Proxy.objects.filter(host=host, port=port).exists():
-            proxies.append(models.Proxy(host=host, port=port, login="test", password="test"))
+            if check_facebook_url(session):
+                if check_proxy_available_for_facebook(session):
+                    proxies.append(models.Proxy(host=host, port=port, login="test", password="test"))
     models.Proxy.objects.bulk_create(proxies, batch_size=200, ignore_conflicts=True)
+
+
+def generate_proxy_session(proxy_login, proxy_password, proxy_host, proxy_port):
+    session = requests.session()
+    session.headers.update({
+        'User-Agent': 'Mozilla/5.0 (X11; Linux i686; rv:39.0) Gecko/20100101 Firefox/39.0'
+    })
+    proxy_str = f"{proxy_login}:{proxy_password}@{proxy_host}:{proxy_port}"
+    proxies = {'http': f'http://{proxy_str}', 'https': f'https://{proxy_str}'}
+
+    session.proxies.update(proxies)
+    return session
+
+
+def check_facebook_url(session):
+    try:
+        response = session.get('https://m.facebook.com', timeout=10)
+        if response.ok:
+            return True
+    except Exception:
+        pass
+    return False
+
+
+def check_proxy_available_for_facebook(session):
+    try:
+        accounts = models.Account.ojects.filer(banned=False).order_by('id')[:500]
+        account = random.choice(accounts)
+        # login = "+79910404158"
+        # password = "yBZHsBZHou761"
+        response = session.post('https://m.facebook.com/login.php', data={
+            'email': account.login,
+            'pass': account.password,
+            # 'email': login,
+            # 'pass': password
+        }, allow_redirects=False, timeout=10)
+        start_page = session.get('https://www.facebook.com/', timeout=10)
+        if 'login/?privacy_mutation_token' in start_page.url:
+            account.banned = True
+            account.save()
+            return check_proxy_available_for_facebook(session)
+        if 'checkpoint' not in start_page.url:
+            return True
+    except Exception as e:
+        print(e)
+        pass
+    return False
 
 
 @app.task
@@ -175,33 +225,13 @@ def get_available_proxy():
     # available = True
     proxies = models.WorkCredentials.objects.all().values_list('proxy', flat=True)
     proxy = models.Proxy.objects.filter() \
-        .exclude(id__in=proxies).order_by(
+        .exclude(id__in=proxies, available=True).order_by(
         "last_time_checked").last()
     if proxy is not None:
         try:
-            session = requests.session()
-            session.headers.update({
-                'User-Agent': 'Mozilla/5.0 (X11; Linux i686; rv:39.0) Gecko/20100101 Firefox/39.0'
-            })
-            print(proxy)
-            proxy_str = f"{proxy.login}:{proxy.password}@{proxy.host}:{proxy.port}"
-            proxies = {'http': f'http://{proxy_str}', 'https': f'https://{proxy_str}'}
-
-            session.proxies.update(proxies)
-            response = session.get('https://m.facebook.com', timeout=10)
-            if response.ok:
-                response = session.get('https://m.facebook.com', timeout=10)
-                response = session.post('https://m.facebook.com/login.php', data={
-                    'email': '79622767100',
-                    'pass': 'fKIEgKIEud89096'
-                }, allow_redirects=False, timeout=10)
-
-                if 'c_user' in response.cookies:
-                    start_page = session.get('https://www.facebook.com/')
-                    if 'checkpoint' not in start_page.url:
-                        return proxy
-            # if check_proxy("http://www.zahodi-ka.ru/proxy/check/?p=http://%s:%s" % (proxy.host,
-            #                                                                         str(proxy.port))):
+            session = generate_proxy_session(proxy.login, proxy.password, proxy.host, proxy.port)
+            if check_facebook_url(session):
+                return True
         except Exception as e:
             print(e)
             pass
@@ -224,13 +254,9 @@ def check_accounts(account, attempt=0):
     proxy = get_available_proxy()
     if proxy is None:
         return
-    print("proxy.id")
-    print(proxy.id)
-    proxy_str = f"{proxy.login}:{proxy.password}@{proxy.host}:{proxy.port}"
-    print(proxy_str)
-    proxies = {'http': f'http://{proxy_str}', 'https': f'https://{proxy_str}'}
+
     try:
-        session.proxies.update(proxies)
+        session = generate_proxy_session(proxy.login, proxy.password, proxy.host, proxy.port)
         response = session.get('https://m.facebook.com', timeout=10)
 
         # login to Facebook

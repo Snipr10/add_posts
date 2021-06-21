@@ -1,3 +1,5 @@
+import json
+
 import requests
 from django.utils import timezone
 from rest_framework import generics, permissions
@@ -6,6 +8,7 @@ from rest_framework import generics, permissions
 from rest_framework.response import Response
 from bs4 import BeautifulSoup
 
+from add_posts.tasks import generate_proxy_session, check_facebook_url, check_proxy_available_for_facebook
 from core import serializers, models
 
 
@@ -29,39 +32,16 @@ class Post(generics.CreateAPIView):
 
     def get(self, request, *args, **kwargs):
         from add_posts.tasks import get_available_proxy
-        return Response(get_available_proxy().id)
-        email = '79539510751'
-        password = 'mnAFZqAFZn65747'
-        session = requests.session()
-        session.headers.update({
-            'User-Agent': 'Mozilla/5.0 (X11; Linux i686; rv:39.0) Gecko/20100101 Firefox/39.0'
-        })
-        proxy_login = 'usr10739536'
-        proxy_password = 'usr10739536'
-        proxy_host = '46.8.215.237'
-        proxy_port = 4040
-        proxy_str = f"{proxy_login}:{proxy_password}@{proxy_host}:{proxy_port}"
-        print(proxy_str)
-        proxies = {'http': f'http://{proxy_str}', 'https': f'https://{proxy_str}'}
-        try:
-            session.proxies.update(proxies)
-            response = session.get('https://m.facebook.com', timeout=60)
-
-            # login to Facebook
-            response = session.post('https://m.facebook.com/login.php', data={
-                'email': email,
-                'pass': password
-            }, allow_redirects=False)
-
-            # If c_user cookie is present, login was successful
-            print("check cookies")
-            if 'c_user' in response.cookies:
-                start_page = session.get('https://www.facebook.com/')
-                return Response(start_page.url)
-
-        except Exception as e:
-            return Response(e)
-        return Response("bad")
+        key = 'd73007770373106ac0256675c604bc22'
+        new_proxy = requests.get("https://api.best-proxies.ru/proxylist.json?key=%s&twitter=1&type=http&speed=1" % key,
+                                 timeout=60)
+        for proxy in json.loads(new_proxy.text):
+            host = proxy['ip']
+            port = proxy['port']
+            session = generate_proxy_session('test', 'test', host, port)
+            if check_facebook_url(session):
+                s = check_proxy_available_for_facebook(session)
+                print(s)
 
 
 class Proxy(generics.CreateAPIView, generics.UpdateAPIView):
