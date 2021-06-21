@@ -136,7 +136,8 @@ def check_facebook_url(session):
         response = session.get('https://m.facebook.com', timeout=15)
         if response.ok:
             return True
-    except Exception:
+    except Exception as e:
+        print(e)
         pass
     return False
 
@@ -234,18 +235,19 @@ def get_available_proxy():
     print(proxy.id)
     if proxy is not None:
         try:
+            print("sessin")
             session = generate_proxy_session(proxy.login, proxy.password, proxy.host, proxy.port)
             if check_facebook_url(session):
                 print("ok")
                 return proxy
         except Exception as e:
-            proxy.available = False
-            proxy.save()
+            pass
         try:
             proxy.delete()
         except Exception as e:
             proxy.available = False
             proxy.save()
+        p
         return get_available_proxy()
         # else:
         #     return get_available_proxy()
