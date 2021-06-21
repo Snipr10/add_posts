@@ -32,8 +32,9 @@ class Post(generics.CreateAPIView):
         return Response("ok")
 
     def get(self, request, *args, **kwargs):
-        proxy = get_available_proxy()
-        return Response(proxy.id)
+        account_id = request.GET['id']
+        # proxy = get_available_proxy()
+        return Response(account_id)
 
 class Proxy(generics.CreateAPIView, generics.UpdateAPIView, generics.ListAPIView):
     permission_classes = [permissions.AllowAny]
