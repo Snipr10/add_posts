@@ -112,6 +112,8 @@ def update_proxy():
         host = proxy['ip']
         port = proxy['port']
         print(host)
+        print(port)
+
         session = generate_proxy_session('test', 'test', host, port)
         if not models.Proxy.objects.filter(host=host, port=port).exists():
             if check_facebook_url(session):
