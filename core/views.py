@@ -33,7 +33,7 @@ class Post(generics.CreateAPIView):
 
     def get(self, request, *args, **kwargs):
         proxy = get_available_proxy()
-        return Response(proxy)
+        return Response(proxy,id)
 
 class Proxy(generics.CreateAPIView, generics.UpdateAPIView, generics.ListAPIView):
     permission_classes = [permissions.AllowAny]
