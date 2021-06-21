@@ -60,14 +60,19 @@ class WorkerSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user_agent = UserAgent.objects.filter(supported=True).order_by('?').first()
-        instance = WorkCredentials.objects.create(user_agent=user_agent, account=validated_data["account"],
-                                                  proxy=validated_data["proxy"])
-        instance.account.available = True
-        instance.account.banned = False
-        instance.account.save()
-        # not use this proxy in prod now
-        instance.proxy.available = False
-        instance.proxy.save()
+        # todo fix
+        instance = None
+        from add_posts.tasks import get_available_proxy
+        proxy = get_available_proxy()
+        if proxy is not None:
+            instance = WorkCredentials.objects.create(user_agent=user_agent, account=validated_data["account"],
+                                                      proxy=proxy)
+            instance.account.available = True
+            instance.account.banned = False
+            instance.account.save()
+            # not use this proxy in prod now
+            instance.proxy.available = False
+            instance.proxy.save()
         return instance
 
     class Meta:
