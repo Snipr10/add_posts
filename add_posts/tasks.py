@@ -239,11 +239,11 @@ def get_available_proxy():
                 print("ok")
                 return proxy
         except Exception as e:
-            print(e)
-            pass
+            proxy.available = False
+            proxy.save()
         try:
             proxy.delete()
-        except Exception:
+        except Exception as e:
             proxy.available = False
             proxy.save()
         return get_available_proxy()
