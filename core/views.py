@@ -53,6 +53,7 @@ class Post(generics.CreateAPIView):
         print("check cookies")
         print(response.ok)
         if response.ok:
+            print("c_user")
             if'c_user' in response.cookies:
                 start_page = session.get('https://www.facebook.com/')
                 print(start_page.url)
@@ -66,6 +67,7 @@ class Post(generics.CreateAPIView):
                         print(W.id)
                     except Exception:
                         print("cannot create WorkCredentials ")
+            print(response.cookies)
         return Response(proxy.id)
 
 class Proxy(generics.CreateAPIView, generics.UpdateAPIView, generics.ListAPIView):
