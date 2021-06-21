@@ -108,6 +108,7 @@ def update_proxy():
         "https://api.best-proxies.ru/proxylist.json?key=%s&twitter=1&type=http,https&speed=1,2" % key,
         timeout=60)
     proxies = []
+    limit = 0
     for proxy in json.loads(new_proxy.text):
         host = proxy['ip']
         port = proxy['port']
@@ -120,6 +121,11 @@ def update_proxy():
                 if port == '8080':
                     if check_proxy_available_for_facebook(session):
                         proxies.append(models.Proxy(host=host, port=port, login="test", password="test"))
+        limit += 1
+        if limit >= 10:
+            limit = 0
+            models.Proxy.objects.bulk_create(proxies, batch_size=200, ignore_conflicts=True)
+            proxies = []
     models.Proxy.objects.bulk_create(proxies, batch_size=200, ignore_conflicts=True)
 
 
