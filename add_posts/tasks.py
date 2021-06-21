@@ -142,7 +142,7 @@ def check_facebook_url(session):
 
 def check_proxy_available_for_facebook(session):
     try:
-        accounts = models.Account.objects.filer(banned=False).order_by('id')[:500]
+        accounts = models.Account.objects.filter(banned=False).order_by('id')[:500]
         account = random.choice(accounts)
         # login = "+79910404158"
         # password = "yBZHsBZHou761"
