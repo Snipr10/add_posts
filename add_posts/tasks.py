@@ -104,8 +104,9 @@ def start_parsing_url():
 def update_proxy():
     print("update_proxy")
     key = models.Keys.objects.all().first().proxykey
-    new_proxy = requests.get("https://api.best-proxies.ru/proxylist.json?key=%s&twitter=1&type=http&speed=1" % key,
-                             timeout=60)
+    new_proxy = requests.get(
+        "https://api.best-proxies.ru/proxylist.json?key=%s&twitter=1&type=http,https&speed=1,2" % key,
+        timeout=60)
     proxies = []
     for proxy in json.loads(new_proxy.text):
         host = proxy['ip']
@@ -284,7 +285,7 @@ def check_accounts(account, attempt=0):
         # If c_user cookie is present, login was successful
         print("check cookies")
         if response.ok:
-            if'c_user' in response.cookies:
+            if 'c_user' in response.cookies:
                 start_page = session.get('https://www.facebook.com/')
                 if 'checkpoint' not in start_page.url:
                     print("account ok " + email)
