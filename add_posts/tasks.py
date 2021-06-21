@@ -232,6 +232,7 @@ def get_available_proxy():
     proxy = models.Proxy.objects.filter() \
         .exclude(id__in=proxies, available=True, port=8080).order_by(
         "last_time_checked").last()
+    print("proxy.id")
     print(proxy.id)
     if proxy is not None:
         try:
