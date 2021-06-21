@@ -120,13 +120,16 @@ def update_proxy():
             if check_facebook_url(session):
                 if port == '8080':
                     if check_proxy_available_for_facebook(session):
-                        proxies.append(models.Proxy(host=host, port=port, login="test", password="test"))
-        limit += 1
-        if limit >= 10:
-            limit = 0
-            models.Proxy.objects.bulk_create(proxies, batch_size=200, ignore_conflicts=True)
-            proxies = []
-    models.Proxy.objects.bulk_create(proxies, batch_size=200, ignore_conflicts=True)
+                        models.Proxy.objects.create(host=host, port=port, login="test", password="test")
+                else:
+                    models.Proxy.objects.create(host=host, port=port, login="test", password="test")
+    #                     proxies.append(models.Proxy(host=host, port=port, login="test", password="test"))
+    #     limit += 1
+    #     if limit >= 10:
+    #         limit = 0
+    #         models.Proxy.objects.bulk_create(proxies, batch_size=200, ignore_conflicts=True)
+    #         proxies = []
+    # models.Proxy.objects.bulk_create(proxies, batch_size=200, ignore_conflicts=True)
 
 
 def generate_proxy_session(proxy_login, proxy_password, proxy_host, proxy_port):
