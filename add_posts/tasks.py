@@ -159,12 +159,12 @@ def check_proxy_available_for_facebook(session):
             account.save()
             return check_proxy_available_for_facebook(session)
         if 'checkpoint' not in start_page.url:
-            print(account.id + "ok")
+            print(str(account.id) + " ok")
             return True
     except Exception as e:
         print(e)
         pass
-    print(account.id + "bad")
+    print(str(account.id) + " bad")
 
     return False
 
