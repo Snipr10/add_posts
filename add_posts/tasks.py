@@ -146,6 +146,7 @@ def check_proxy_available_for_facebook(session):
         account = random.choice(accounts)
         # login = "+79910404158"
         # password = "yBZHsBZHou761"
+        print(account.id)
         response = session.post('https://m.facebook.com/login.php', data={
             'email': account.login,
             'pass': account.password,
@@ -158,10 +159,13 @@ def check_proxy_available_for_facebook(session):
             account.save()
             return check_proxy_available_for_facebook(session)
         if 'checkpoint' not in start_page.url:
+            print(account.id + "ok")
             return True
     except Exception as e:
         print(e)
         pass
+    print(account.id + "bad")
+
     return False
 
 
