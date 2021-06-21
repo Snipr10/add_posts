@@ -244,7 +244,7 @@ def get_available_proxy():
         try:
             proxy.delete()
         except Exception:
-            proxy.available=True
+            proxy.available = False
             proxy.save()
         return get_available_proxy()
         # else:
