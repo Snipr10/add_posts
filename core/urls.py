@@ -1,5 +1,7 @@
 from django.urls import path
 from . import views
+from .views import statistic
+
 urlpatterns = [
     path("post/", views.Post.as_view()),
 
@@ -11,5 +13,6 @@ urlpatterns = [
 
     path("worker/", views.Worker.as_view()),
     path("proxy/", views.Proxy.as_view()),
+    path('statistic', statistic),
 
 ]

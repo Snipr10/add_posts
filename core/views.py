@@ -2,16 +2,18 @@ import json
 
 import requests
 from django.utils import timezone
-from rest_framework import generics, permissions
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework import generics, permissions, status
 
 # Create your views here.
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from bs4 import BeautifulSoup
 
 from add_posts.tasks import generate_proxy_session, check_facebook_url, check_proxy_available_for_facebook, \
     get_available_proxy
 from core import serializers, models
-
 
 # urllib3==1.25.11
 from core.helpers import get_proxy, find_value
@@ -54,21 +56,23 @@ class Post(generics.CreateAPIView):
         print(response.ok)
         if response.ok:
             print("c_user")
-            if'c_user' in response.cookies:
+            if 'c_user' in response.cookies:
                 start_page = session.get('https://www.facebook.com/')
                 print(start_page.url)
                 if 'checkpoint' not in start_page.url:
                     print("ok")
                     try:
                         W = models.WorkCredentials.objects.create(account=account, proxy=proxy, locked=False,
-                                                              user_agent=models.UserAgent.objects.filter(supported=True)
-                                                              .order_by('?').first()
-                                                              )
+                                                                  user_agent=models.UserAgent.objects.filter(
+                                                                      supported=True)
+                                                                  .order_by('?').first()
+                                                                  )
                         print(W.id)
                     except Exception:
                         print("cannot create WorkCredentials ")
             print(response.cookies)
         return Response(proxy.id)
+
 
 class Proxy(generics.CreateAPIView, generics.UpdateAPIView, generics.ListAPIView):
     permission_classes = [permissions.AllowAny]
@@ -88,3 +92,12 @@ class Worker(generics.CreateAPIView):
     # queryset = models.Account.objects.all()
 
 
+@csrf_exempt
+@api_view(["GET"])
+@permission_classes((AllowAny,))
+def statistic(request):
+    worker = models.WorkCredentials.objects.filter(locked=False).count()
+    return Response({'proxy': models.Proxy.objects.filter(available=True, port=8080).count()
+                              + worker,
+                     'worker': worker},
+                    status=status.HTTP_200_OK)
