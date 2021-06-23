@@ -97,7 +97,10 @@ class Worker(generics.CreateAPIView):
 @permission_classes((AllowAny,))
 def statistic(request):
     worker = models.WorkCredentials.objects.filter(locked=False).count()
+    balance = requests.get('https://onlinesim.ru/api/getBalance.php?apikey=71cc492d41aea50bc9d3578e15d8a6b3')
+
     return Response({'proxy': models.Proxy.objects.filter(available=True, port=8080).count()
                               + worker,
-                     'worker': worker},
+                     'worker': worker,
+                     'balance': float(balance.json()['balance'])},
                     status=status.HTTP_200_OK)
