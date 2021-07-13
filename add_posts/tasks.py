@@ -105,7 +105,7 @@ def update_proxy():
     print("update_proxy")
     key = models.Keys.objects.all().first().proxykey
     new_proxy = requests.get(
-        "https://api.best-proxies.ru/proxylist.json?key=%s&twitter=1&type=http,https&speed=1,2" % key,
+        "https://api.best-proxies.ru/proxylist.json?key=%s&type=http,https&speed=1,2&country=ru" % key,
         timeout=60)
     proxies = []
     limit = 0
