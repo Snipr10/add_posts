@@ -33,7 +33,8 @@ class PostStat(models.Model):
 
 class Task(models.Model):
     interval = models.IntegerField(null=True, blank=True)
-
+    status = models.CharField(max_length=16, null=True, blank=True)
+    finish_time = models.DateTimeField(null=True, blank=True)
     class Meta:
         db_table = 'tasks'
 

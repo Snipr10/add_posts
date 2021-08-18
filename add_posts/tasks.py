@@ -343,3 +343,33 @@ def delete_old_proxy():
                 proxy.delete()
         except Exception:
             pass
+
+
+@app.task
+def update_task():
+    tasks = [
+        3635,
+        11120,
+        11117,
+        11116,
+        11040,
+        11039,
+        11038,
+        11035,
+        10890,
+        10889,
+        10888,
+        10887,
+        10886,
+        10885,
+        10884,
+        10883,
+        10882,
+        10881,
+        10880
+    ]
+    for task in tasks:
+        task = models.Task.objects.get(id=task)
+        task.status=None
+        task.finish_time=None
+        task.save(update_fields=["status", "finish_time"])
