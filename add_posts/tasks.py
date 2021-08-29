@@ -366,10 +366,14 @@ def update_task():
         10883,
         10882,
         10881,
-        10880
+        10880,
+        6222
     ]
     for task in tasks:
-        task = models.Task.objects.get(id=task)
-        task.status=None
-        task.finish_time=None
-        task.save(update_fields=["status", "finish_time"])
+        try:
+            task = models.Task.objects.get(id=task)
+            task.status=None
+            task.finish_time=None
+            task.save(update_fields=["status", "finish_time"])
+        except Exception:
+            pass
