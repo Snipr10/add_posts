@@ -105,7 +105,7 @@ def statistic(request):
     balance = requests.get("https://vak-sms.com/api/getBalance/",
                            params={
                                "apiKey": VAK_KEY,
-                           }).json().get("balance")
+                           })
 
     return Response(dict(proxy=models.Proxy.objects.filter(available=True, port=8080).count()
                                + worker, worker=worker, balance=float(balance.json()['balance'])),
