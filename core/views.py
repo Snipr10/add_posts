@@ -96,11 +96,17 @@ class Worker(generics.CreateAPIView):
 @api_view(["GET"])
 @permission_classes((AllowAny,))
 def statistic(request):
-    worker = models.WorkCredentials.objects.filter(locked=False).count()
-    balance = requests.get('https://onlinesim.ru/api/getBalance.php?apikey=b8064527e750e01dd9d58e28507087e7')
+    # balance = requests.get('https://onlinesim.ru/api/getBalance.php?apikey=b8064527e750e01dd9d58e28507087e7')
 
-    return Response({'proxy': models.Proxy.objects.filter(available=True, port=8080).count()
-                              + worker,
-                     'worker': worker,
-                     'balance': float(balance.json()['balance'])},
+    VAK_KEY = "4b8df5fedf7045e18b2087a4ebe903ae"
+
+    worker = models.WorkCredentials.objects.filter(locked=False).count()
+
+    balance = requests.get("https://vak-sms.com/api/getBalance/",
+                           params={
+                               "apiKey": VAK_KEY,
+                           }).json().get("balance")
+
+    return Response(dict(proxy=models.Proxy.objects.filter(available=True, port=8080).count()
+                               + worker, worker=worker, balance=float(balance.json()['balance'])),
                     status=status.HTTP_200_OK)
