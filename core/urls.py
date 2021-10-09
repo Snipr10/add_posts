@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import statistic
+from .views import statistic, reset_task
 
 urlpatterns = [
     path("post/", views.Post.as_view()),
@@ -15,4 +15,5 @@ urlpatterns = [
     path("proxy/", views.Proxy.as_view()),
     path('statistic', statistic),
 
+    path("reset_tasks", reset_tasks)
 ]
