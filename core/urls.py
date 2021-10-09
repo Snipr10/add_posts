@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import statistic, reset_tasks, reset_task_by_key
+from .views import statistic, reset_tasks, reset_task_by_key, status_tasks
 
 urlpatterns = [
     path("post/", views.Post.as_view()),
@@ -16,6 +16,7 @@ urlpatterns = [
     path('statistic', statistic),
 
     path("reset_tasks", reset_tasks),
-    path("reset_task_by_key", reset_task_by_key)
+    path("reset_task_by_key", reset_task_by_key),
+    path("status_tasks", status_tasks)
 
 ]

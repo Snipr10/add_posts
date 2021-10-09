@@ -95,6 +95,18 @@ class Worker(generics.CreateAPIView):
 @csrf_exempt
 @api_view(["POST"])
 @permission_classes((AllowAny,))
+def status_tasks(request):
+    try:
+        tasks_models = models.Task.objects.filter(id__in=request.data)
+        return Response(tasks_models, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response(str(e),
+                        status=status.HTTP_400_BAD_REQUEST)
+
+
+@csrf_exempt
+@api_view(["POST"])
+@permission_classes((AllowAny,))
 def reset_tasks(request):
     try:
         tasks_models = models.Task.objects.filter(id__in=request.data)
