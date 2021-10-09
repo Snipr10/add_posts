@@ -110,9 +110,12 @@ def reset_tasks(request):
 @permission_classes((AllowAny,))
 def reset_task_by_key(request):
     try:
+        print("reset_task_by_key")
+        print(request.data[0])
         task_keyword = models.TaskKeyWord.objects.filter(keyword=request.data[0]).first()
         if task_keyword is None:
             keywords = SomeModel.objects.filter(keyword_icontains=request.data[0]).values_list("keyword", flat=True)
+            print(keywords)
             return Response(keywords,
                         status=status.HTTP_404_NOT_FOUND)
         else:
