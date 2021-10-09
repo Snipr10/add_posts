@@ -3,7 +3,6 @@ import json
 import requests
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
-from django.core import serializers
 
 from rest_framework import generics, permissions, status
 
@@ -99,8 +98,10 @@ class Worker(generics.CreateAPIView):
 @permission_classes((AllowAny,))
 def status_tasks(request):
     try:
+        from django.core import serializers as django_serializers
+
         tasks_models = models.Task.objects.filter(id__in=request.data)
-        tasks_status = serializers.serialize("json", tasks_models,
+        tasks_status = django_serializers.serialize("json", tasks_models,
                                        fields=("id", "status"))
 
         return Response(tasks_status, status=status.HTTP_200_OK)
