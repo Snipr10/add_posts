@@ -121,10 +121,10 @@ def reset_task_by_key(request):
             keywords = list(models.TaskKeyWord.objects.filter(keyword__icontains=request.data[0]).values_list("keyword", flat=True))
             print(keywords)
             return Response(keywords,
-                        status=status.HTTP_200_OK)
+                        status=status.HTTP_404_NOT_FOUND)
         else:
-            tasks_models = models.Task.objects.filter(id=task_keyword.task_id)
-            tasks_models.status=None
+            tasks_models = models.Task.objects.get(id=task_keyword.task_id)
+            tasks_models.status = None
             tasks_models.save(update_fields=['status'])
             return Response("ok", status=status.HTTP_200_OK)
     except Exception as e:
