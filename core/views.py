@@ -102,7 +102,26 @@ def reset_tasks(request):
         return Response("ok", status=status.HTTP_200_OK)
     except Exception as e:
         return Response(str(e),
-                        status=status.http_400_bad_request)
+                        status=status.HTTP_400_BAD_REQUEST)
+
+
+@csrf_exempt
+@api_view(["POST"])
+@permission_classes((AllowAny,))
+def reset_task_by_key(request):
+    try:
+        task_keyword = models.TaskKeyWord.objects.filter(keyword=request.data[0]).first()
+        if task_keyword is None:
+            keywords = SomeModel.objects.filter(keyword_icontains=request.data[0]).values_list("keyword", flat=True)
+            return Response(keywords,
+                        status=status.HTTP_404_NOT_FOUND)
+        else:
+            task_keyword.status=None
+            task_keyword.save(update_fields=['status'])
+            return Response("ok", status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response(str(e),
+                        status=status.HTTP_400_BAD_REQUEST)
 
 
 @csrf_exempt

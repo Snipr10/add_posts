@@ -40,6 +40,14 @@ class Task(models.Model):
         db_table = 'tasks'
 
 
+class TaskKeyWord(models.Model):
+    keyword = models.CharField(max_length=255, null=True, blank=True)
+    task_id = models.IntegerField()
+
+    class Meta:
+        db_table = 'tasks_keyword'
+
+
 class User(models.Model):
     name = models.CharField(max_length=1024, null=True, blank=True)
     link = models.CharField(max_length=1024, null=True, blank=True)
