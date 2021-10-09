@@ -118,10 +118,10 @@ def reset_task_by_key(request):
         if task_keyword is None:
             print("task_keyword None")
 
-            keywords = models.TaskKeyWord.objects.filter(keyword__icontains=request.data[0]).values_list("keyword", flat=True)
+            keywords = list(models.TaskKeyWord.objects.filter(keyword__icontains=request.data[0]).values_list("keyword", flat=True))
             print(keywords)
             return Response(keywords,
-                        status=status.HTTP_404_NOT_FOUND)
+                        status=status.HTTP_200_OK)
         else:
             tasks_models = models.Task.objects.filter(id=task_keyword.task_id)
             tasks_models.status=None
