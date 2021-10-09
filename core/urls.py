@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import statistic, reset_task
+from .views import statistic, reset_tasks
 
 urlpatterns = [
     path("post/", views.Post.as_view()),
