@@ -38,11 +38,11 @@ app.conf.beat_schedule = {
         'schedule': crontab(
             minute='*/30')
     },
-    # 'delete_old_proxy': {
-    #     'task': 'add_posts.tasks.delete_old_proxy',
-    #     'schedule': crontab(
-    #         minute='*/10')
-    # }
+    'delete_old_proxy': {
+        'task': 'add_posts.tasks.delete_old_proxy',
+        'schedule': crontab(
+            minute='*/10')
+    }
 
 
 }
