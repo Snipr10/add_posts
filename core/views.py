@@ -161,6 +161,6 @@ def statistic(request):
                                "apiKey": VAK_KEY,
                            })
 
-    return Response(dict(proxy=models.Proxy.objects.filter(available=True, port__in=[8080, 799, 777]).count()
+    return Response(dict(proxy=models.Proxy.objects.filter(available=True, port__in=[8080, 999, 777]).count()
                                + worker, worker=worker, balance=float(balance.json()['balance'])),
                     status=status.HTTP_200_OK)
