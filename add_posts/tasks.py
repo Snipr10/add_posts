@@ -244,12 +244,12 @@ def check_proxy(url, attempt=0):
 
 def get_available_proxy():
     proxies = models.WorkCredentials.objects.all().values_list('proxy', flat=True)
-    proxy = models.Proxy.objects.filter(available=True, port=8080) \
+    proxy = models.Proxy.objects.filter(available=True) \
         .exclude(id__in=proxies).order_by(
         # "attempts").first()
         "last_time_checked").last()
     if proxy is None:
-        proxy = models.Proxy.objects.filter(available=True, port=8080) \
+        proxy = models.Proxy.objects.filter(available=True) \
             .order_by(
             # "attempts").first()
         "last_time_checked").last()
