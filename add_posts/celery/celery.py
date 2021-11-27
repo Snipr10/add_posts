@@ -31,7 +31,7 @@ app.conf.beat_schedule = {
     'check_not_available_accounts': {
         'task': 'add_posts.tasks.check_not_available_accounts',
         'schedule': crontab(
-            minute='*/3')
+            minute='*/4')
     },
     'update_task': {
         'task': 'add_posts.tasks.update_task',
