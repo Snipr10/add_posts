@@ -160,7 +160,8 @@ def statistic(request):
                            params={
                                "apiKey": VAK_KEY,
                            })
-
+    last_update = models.Post.objects.all().order_by('last_time_updated').last().last_time_updated
     return Response(dict(proxy=models.Proxy.objects.filter(available=True, attempts__lt=25).count()
-                               + worker, worker=worker, balance=float(balance.json()['balance'])),
+                               + worker, worker=worker, balance=float(balance.json()['balance']),
+                         last_update=last_update),
                     status=status.HTTP_200_OK)
