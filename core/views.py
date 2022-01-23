@@ -11,6 +11,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from bs4 import BeautifulSoup
+from datetime import timedelta, datetime, date
 
 from add_posts.tasks import generate_proxy_session, check_facebook_url, check_proxy_available_for_facebook, \
     get_available_proxy
@@ -160,8 +161,15 @@ def statistic(request):
                            params={
                                "apiKey": VAK_KEY,
                            })
+    today_date = date.today()
+
+    today_post_date = (datetime(today_date.year, today_date.month, today_date.day, 0, 0, 0)) - timedelta(hours=3)
     last_update = models.Post.objects.all().order_by('last_time_updated').last().last_time_updated
     return Response(dict(proxy=models.Proxy.objects.filter(available=True, attempts__lt=25).count()
-                               + worker, worker=worker, balance=float(balance.json()['balance']),
-                         last_update=last_update),
+                               + worker,
+                         worker=worker,
+                         balance=float(balance.json()['balance']),
+                         last_update=last_update,
+                         count=models.Post.objects.filter(last_time_updated__gte=today_post_date).count()
+                         ),
                     status=status.HTTP_200_OK)
