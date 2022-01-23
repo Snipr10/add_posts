@@ -63,7 +63,7 @@ class User(models.Model):
 
 class Post(models.Model):
     date = models.DateField(auto_now=True)
-    last_time_updated = models.DateField(auto_now=True)
+    last_time_updated = models.DateTimeField(auto_now=True)
     fb_post_id = models.CharField(max_length=1024, null=True, blank=True)
     fb_repost_id = models.CharField(max_length=128, null=True, blank=True)
     fb_repost_link = models.CharField(max_length=2048, null=True, blank=True)
