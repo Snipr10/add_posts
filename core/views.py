@@ -165,6 +165,7 @@ def statistic(request):
 
     today_post_date = (datetime(today_date.year, today_date.month, today_date.day, 0, 0, 0)) - timedelta(hours=3)
     last_update = models.Post.objects.all().order_by('last_time_updated').last().last_time_updated
+    print(today_post_date)
     return Response(dict(proxy=models.Proxy.objects.filter(available=True, attempts__lt=25).count()
                                + worker,
                          worker=worker,
