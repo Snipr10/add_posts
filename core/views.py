@@ -154,13 +154,18 @@ def statistic(request):
     # balance = requests.get('https://onlinesim.ru/api/getBalance.php?apikey=b8064527e750e01dd9d58e28507087e7')
 
     VAK_KEY = "4b8df5fedf7045e18b2087a4ebe903ae"
+    try:
 
-    worker = models.WorkCredentials.objects.filter(locked=False).count()
+        worker = models.WorkCredentials.objects.filter(locked=False).count()
 
-    balance = requests.get("https://vak-sms.com/api/getBalance/",
-                           params={
-                               "apiKey": VAK_KEY,
-                           })
+        balance = requests.get("https://vak-sms.com/api/getBalance/",
+                               params={
+                                   "apiKey": VAK_KEY,
+                               })
+        balance = float(balance.json()['balance'])
+    except Exception as e:
+        print(e)
+        balance = 0
     today_date = date.today()
 
     today_post_date = (datetime(today_date.year, today_date.month, today_date.day, 0, 0, 0)) - timedelta(hours=3)
@@ -169,7 +174,7 @@ def statistic(request):
     return Response(dict(proxy=models.Proxy.objects.filter(available=True, attempts__lt=25).count()
                                + worker,
                          worker=worker,
-                         balance=float(balance.json()['balance']),
+                         balance=balance,
                          last_update=last_update,
                          count=models.Post.objects.filter(last_time_updated__gte=today_post_date).count()
                          ),
