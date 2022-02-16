@@ -13,8 +13,8 @@ app.config_from_object('django.conf:settings')
 app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
-    'start_parsing_url': {
-        'task': 'add_posts.tasks.update_content()',
+    'start_update_content': {
+        'task': 'add_posts.tasks.start_update_content()',
         'schedule': crontab(
             minute='*/5')
     },
