@@ -1,14 +1,70 @@
 import json
 import random
+import re
 from datetime import timedelta, datetime
 
+import bs4
 import requests
+from facebook_scraper import get_posts
 
 from add_posts.celery.celery import app
 from bs4 import BeautifulSoup
 from core import models
 from core.helpers import get_proxy, find_value
 from django.utils import timezone
+
+from core.models import Post
+
+
+def get_text_lib(url):
+    try:
+        post = next(get_posts(post_urls=[url]))
+        return post['text']
+
+    except Exception as e:
+        print(e)
+        return None
+
+
+def get_text_my(url):
+    try:
+        response = requests.request("GET", url, headers={
+            'authority': 'm.facebook.com',
+            'cache-control': 'max-age=0',
+            'sec-ch-ua': '"Chromium";v="92", " Not A;Brand";v="99", "Google Chrome";v="92"',
+            'sec-ch-ua-mobile': '?1',
+            'dnt': '1',
+            'upgrade-insecure-requests': '1',
+            'user-agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Mobile Safari/537.36',
+            'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+            'sec-fetch-site': 'none',
+            'sec-fetch-mode': 'navigate',
+            'sec-fetch-user': '?1',
+            'sec-fetch-dest': 'document',
+            'accept-language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7'
+
+        }, data={})
+
+        bs = bs4.BeautifulSoup(response.text)
+        str_bs = str(bs.find("div", {"class": "hidden_elem"}))
+        text_with_html = str_bs[str_bs.find("<p>"):str_bs.rfind("</p>")]
+        text = re.sub(r'\<[^>]*\>', '', text_with_html)
+        return text
+    except Exception as e:
+        print(e)
+        return None
+
+
+@app.task
+def update_content():
+    for post in Post.objects.filter(context__text__isnull=True).order_by('-id'):
+        text = get_text_lib(post.fb_post_link)
+        if not text:
+            text = get_text_my(post.fb_post_link)
+        if text:
+            print(text)
+            post.content.text = text
+            post.content.save()
 
 
 @app.task

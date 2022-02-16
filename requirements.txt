@@ -33,3 +33,4 @@ wrapt==1.12.1
 psycopg2-binary==2.8.6
 BeautifulSoup4==4.9.3
 bs4==2.2.1
+facebook-scraper==0.2.51
