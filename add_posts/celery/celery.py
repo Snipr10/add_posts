@@ -14,7 +14,7 @@ app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
     'start_update_content': {
-        'task': 'add_posts.tasks.start_update_content()',
+        'task': 'add_posts.tasks.start_update_content',
         'schedule': crontab(
             minute='*/5')
     },
