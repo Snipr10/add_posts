@@ -57,7 +57,7 @@ def get_text_my(url):
 
 @app.task
 def start_update_content():
-    for post in Post.objects.filter(context__text__isnull=True).order_by('-id'):
+    for post in Post.objects.filter(content__text__isnull=True).order_by('-id'):
         text = get_text_lib(post.fb_post_link)
         if not text:
             text = get_text_my(post.fb_post_link)
