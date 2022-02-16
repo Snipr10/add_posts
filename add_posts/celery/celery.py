@@ -18,31 +18,31 @@ app.conf.beat_schedule = {
         'schedule': crontab(
             minute='*/5')
     },
-    # 'update_proxy': {
-    #     'task': 'add_posts.tasks.update_proxy',
+    'update_proxy': {
+        'task': 'add_posts.tasks.update_proxy',
+        'schedule': crontab(
+            minute='*/2')
+    },
+    'delete_bad_worker_credentials': {
+        'task': 'add_posts.tasks.delete_bad_worker_credentials',
+        'schedule': crontab(
+            minute='*/1')
+    },
+    'check_not_available_accounts': {
+        'task': 'add_posts.tasks.check_not_available_accounts',
+        'schedule': crontab(
+            minute='*/4')
+    },
+    'update_task': {
+        'task': 'add_posts.tasks.update_task',
+        'schedule': crontab(
+            minute='*/30')
+    },
+    # 'delete_old_proxy': {
+    #     'task': 'add_posts.tasks.delete_old_proxy',
     #     'schedule': crontab(
-    #         minute='*/2')
-    # },
-    # 'delete_bad_worker_credentials': {
-    #     'task': 'add_posts.tasks.delete_bad_worker_credentials',
-    #     'schedule': crontab(
-    #         minute='*/1')
-    # },
-    # 'check_not_available_accounts': {
-    #     'task': 'add_posts.tasks.check_not_available_accounts',
-    #     'schedule': crontab(
-    #         minute='*/4')
-    # },
-    # 'update_task': {
-    #     'task': 'add_posts.tasks.update_task',
-    #     'schedule': crontab(
-    #         minute='*/30')
-    # },
-    # # 'delete_old_proxy': {
-    # #     'task': 'add_posts.tasks.delete_old_proxy',
-    # #     'schedule': crontab(
-    # #         minute='*/10')
-    # # }
+    #         minute='*/10')
+    # }
 
 
 }
