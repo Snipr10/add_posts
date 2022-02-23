@@ -312,7 +312,7 @@ def check_not_available_accounts():
     # [:500]
 
     for account in models.Account.objects.filter(available=False).order_by("-id")[:100]:
-        if account.availability_check <= datetime.now() + datetime.timedelta(minutes=25):
+        if account.availability_check <= datetime.now() + timedelta(minutes=25):
             print("account.id")
             print(account.id)
             check_accounts(account, attempt=0)
