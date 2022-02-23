@@ -158,6 +158,51 @@ def start_parsing_url():
         post_url.save()
 
 
+
+@app.task
+def start_parsing_url_new():
+    proxy = get_proxy()
+    if proxy is None:
+        return
+    print(proxy)
+    proxies = {'https': 'https://{}:{}@{}:{}'.format(proxy.login, proxy.password, proxy.host, str(proxy.port))}
+    post_url = \
+        models.PostUrl.objects.filter(is_ready=False, is_successful=True,
+                                      is_parsing=False).order_by('added_date').first()
+    if post_url is not None:
+        post_url.is_parsing = True
+        post_url.save()
+        res = None
+        print(post_url.db_post_url)
+        try:
+            res = next(get_posts(post_urls=["https://www.facebook.com/iapobedarf/posts/1131484217389027"], credentials=("79398102748", "wWDzjWNCiWNCu31646")))
+
+            owner_fb_id = res['user_id']
+
+            user_url = res['user_url'].replace("?__tn__=C-R", "")
+            user = models.User.objects.filter(link=user_url).first()
+            if user is None:
+                user = models.User.objects.create(name=res['username'], link=user_url, fb_id=owner_fb_id)
+
+            state = models.PostStat.objects.create(likes=res['likes'], comments=res['comments'], shares=res['shares'])
+            content = models.Content.objects.create(text=res['text'])
+            task = models.Task.objects.get(id=int(post_url.task_id))
+            post = models.Post.objects.create(content=content, task=task,
+                                              user=user, stat=state)
+            print("post " + str(post.id))
+            post_url.is_ready = True
+            post_url.added_date = timezone.now()
+        except Exception as e:
+            if "Содержание не найдено" in res:
+                post_url.is_successful = False
+            elif "Вход на Facebook | Facebook" in res:
+                print("sleep proxy")
+            else:
+                print(e)
+        post_url.is_parsing = False
+        post_url.save()
+
+
 @app.task
 def update_proxy():
     print("update_proxy")
@@ -175,20 +220,18 @@ def update_proxy():
         print(port)
 
         session = generate_proxy_session('test', 'test', host, port)
+
         if not models.Proxy.objects.filter(host=host, port=port).exists():
             if check_facebook_url(session):
-                if port == '8080':
-                    if check_proxy_available_for_facebook(session):
-                        models.Proxy.objects.create(host=host, port=port, login="test", password="test")
-                else:
-                    models.Proxy.objects.create(host=host, port=port, login="test", password="test")
+                models.Proxy.objects.create(host=host, port=port, login="test", password="test")
+
+                # if port == '8080':
+                #     if check_proxy_available_for_facebook(session):
+                #         models.Proxy.objects.create(host=host, port=port, login="test", password="test")
+                # else:
+                #     models.Proxy.objects.create(host=host, port=port, login="test", password="test")
     #                     proxies.append(models.Proxy(host=host, port=port, login="test", password="test"))
-    #     limit += 1
-    #     if limit >= 10:
-    #         limit = 0
-    #         models.Proxy.objects.bulk_create(proxies, batch_size=200, ignore_conflicts=True)
-    #         proxies = []
-    # models.Proxy.objects.bulk_create(proxies, batch_size=200, ignore_conflicts=True)
+
 
 
 def generate_proxy_session(proxy_login, proxy_password, proxy_host, proxy_port):
@@ -267,10 +310,12 @@ def delete_bad_worker_credentials():
 def check_not_available_accounts():
     # maybe 100 ??
     # [:500]
-    for account in models.Account.objects.filter(available=False).order_by("-id")[:500]:
-        print("account.id")
-        print(account.id)
-        check_accounts(account, attempt=0)
+
+    for account in models.Account.objects.filter(available=False).order_by("-id")[:100]:
+        if account.availability_check <= datetime.now() + datetime.timedelta(minutes=25):
+            print("account.id")
+            print(account.id)
+            check_accounts(account, attempt=0)
 
 
 def check_proxy(url, attempt=0):
@@ -368,7 +413,8 @@ def check_accounts(account, attempt=0):
                     print("account ok " + email)
                     account.available = True
                     account.banned = False
-                    account.save()
+                    account.availability_check = datetime.now()
+                    account.save(update_fields=['banned', 'available', 'availability_check'])
                     try:
                         models.WorkCredentials.objects.create(account=account, proxy=proxy, locked=False,
                                                               user_agent=models.UserAgent.objects.filter(supported=True)
@@ -380,16 +426,22 @@ def check_accounts(account, attempt=0):
                 print("account disable " + email)
             else:
                 account.banned = False
-                account.save()
+                account.availability_check = datetime.now()
+
+                account.save(update_fields=['banned', 'availability_check'])
         return False
     except Exception:
-        proxy.available = False
-        proxy.save()
-        if attempt < 5:
+
+        if attempt < 3:
             print("account Exception " + email)
 
             return check_accounts(account, attempt + 1)
         else:
+            proxy.available = False
+            account.availability_check = datetime.now()
+
+            proxy.save(update_fields=['available', 'availability_check'])
+
             print("account Exception disable " + email)
             return False
 

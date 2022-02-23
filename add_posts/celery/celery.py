@@ -21,7 +21,7 @@ app.conf.beat_schedule = {
     'update_proxy': {
         'task': 'add_posts.tasks.update_proxy',
         'schedule': crontab(
-            minute='*/3')
+            minute='*/10')
     },
     'delete_bad_worker_credentials': {
         'task': 'add_posts.tasks.delete_bad_worker_credentials',
@@ -31,7 +31,7 @@ app.conf.beat_schedule = {
     'check_not_available_accounts': {
         'task': 'add_posts.tasks.check_not_available_accounts',
         'schedule': crontab(
-            minute='*/10')
+            minute='*/25')
     },
     # 'update_task': {
     #     'task': 'add_posts.tasks.update_task',
