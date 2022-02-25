@@ -16,7 +16,7 @@ app.conf.beat_schedule = {
     'start_update_content': {
         'task': 'add_posts.tasks.start_update_content',
         'schedule': crontab(
-            hour='10')
+            hour='*/1')
     },
     'update_proxy': {
         'task': 'add_posts.tasks.update_proxy',

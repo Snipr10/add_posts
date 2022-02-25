@@ -1,12 +1,12 @@
 import json
-import multiprocessing
 import random
 import re
 from datetime import timedelta, datetime
+from urllib.parse import urlparse, urljoin
 
 import bs4
 import requests
-from facebook_scraper import get_posts
+from facebook_scraper import get_posts, FacebookScraper
 
 from add_posts.celery.celery import app
 from bs4 import BeautifulSoup
@@ -58,7 +58,7 @@ def get_text_my(url):
 
 @app.task
 def start_update_content():
-    for post in Post.objects.filter(content__text__isnull=True).order_by('-id'):
+    for post in Post.objects.filter(content__text__isnull=True).order_by('-id')[:50]:
         text = get_text_lib(post.fb_post_link)
         if not text:
             text = get_text_my(post.fb_post_link)
@@ -159,14 +159,23 @@ def start_parsing_url():
         post_url.save()
 
 
-
 @app.task
 def start_parsing_url_new():
-    proxy = get_proxy()
-    if proxy is None:
+    attempt = 15
+    face = None
+    while attempt > 0:
+        try:
+            proxy = get_proxy()
+            if proxy is None:
+                return
+            proxies = {'https': 'https://{}:{}@{}:{}'.format(proxy.login, proxy.password, proxy.host, str(proxy.port))}
+
+            face = FacebookScraper()
+            face.set_proxy(proxies)
+        except Exception:
+            attempt += -1
+    if face is not None:
         return
-    print(proxy)
-    proxies = {'https': 'https://{}:{}@{}:{}'.format(proxy.login, proxy.password, proxy.host, str(proxy.port))}
     post_url = \
         models.PostUrl.objects.filter(is_ready=False, is_successful=True,
                                       is_parsing=False).order_by('added_date').first()
@@ -176,11 +185,12 @@ def start_parsing_url_new():
         res = None
         print(post_url.db_post_url)
         try:
-            res = next(get_posts(post_urls=["https://www.facebook.com/iapobedarf/posts/1131484217389027"], credentials=("79398102748", "wWDzjWNCiWNCu31646")))
-
+            res = next(get_posts(post_urls=post_url.db_post_url))
+            next(face.get_posts_by_url(
+                post_urls=[post_url.db_post_url]))
             owner_fb_id = res['user_id']
 
-            user_url = res['user_url'].replace("?__tn__=C-R", "")
+            user_url = urljoin(res['user_url'], urlparse(res['user_url']).path)
             user = models.User.objects.filter(link=user_url).first()
             if user is None:
                 user = models.User.objects.create(name=res['username'], link=user_url, fb_id=owner_fb_id)
