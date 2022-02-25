@@ -1,4 +1,5 @@
 import json
+import multiprocessing
 import random
 import re
 from datetime import timedelta, datetime
@@ -311,11 +312,16 @@ def check_not_available_accounts():
     # maybe 100 ??
     # [:500]
 
-    for account in models.Account.objects.filter(available=False).order_by("-id")[:100]:
+    for account in models.Account.objects.filter(available=False).order_by("-id")[:50]:
+        print(f"account.id {account.id}")
         if account.availability_check <= datetime.now() + timedelta(minutes=25):
-            print("account.id")
-            print(account.id)
-            check_accounts(account, attempt=0)
+            x = multiprocessing.Process(target=check_accounts, args=(account, 0))
+            x.start()
+
+        # if account.availability_check <= datetime.now() + timedelta(minutes=25):
+        #     print("account.id")
+        #     print(account.id)
+        #     check_accounts(account, attempt=0)
 
 
 def check_proxy(url, attempt=0):
