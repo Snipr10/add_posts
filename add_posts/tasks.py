@@ -163,12 +163,24 @@ def start_parsing_url():
 def start_parsing_url_new():
     attempt = 15
     face = None
+    workers = models.WorkCredentials.objects.all()
+    for w in workers:
+        try:
+            attempt += -1
+            proxy = w.proxy
+            proxies = 'http://{}:{}@{}:{}'.format(proxy.login, proxy.password, proxy.host, str(proxy.port))
+            print(proxies)
+            face = FacebookScraper()
+            face.set_proxy(proxies)
+            break
+        except Exception as e:
+            print(e)
     while attempt > 0:
         try:
             proxy = get_proxy()
             if proxy is None:
                 return
-            proxies = 'https://{}:{}@{}:{}'.format(proxy.login, proxy.password, proxy.host, str(proxy.port))
+            proxies = 'http://{}:{}@{}:{}'.format(proxy.login, proxy.password, proxy.host, str(proxy.port))
             print(proxies)
             face = FacebookScraper()
             face.set_proxy(proxies)
