@@ -217,8 +217,8 @@ def start_parsing_url_new():
                 state = models.PostStat.objects.create(likes=res['likes'], comments=res['comments'], shares=res['shares'])
                 content = models.Content.objects.create(text=res['text'])
                 task = models.Task.objects.get(id=int(post_url.task_id))
-                post = models.Post.objects.create(content=content, task=task,
-                                                  user=user, stat=state)
+                post = models.Post.objects.create(content=content, task=task, date=res['time'],
+                                                  user=user, stat=state, fb_post_link=res['post_url'], fb_post_id=res['post_id'])
                 print("post " + str(post.id))
                 post_url.is_ready = True
                 post_url.added_date = timezone.now()
