@@ -169,7 +169,7 @@ def start_parsing_url_new():
             attempt += -1
             proxy = w.proxy
             proxies = 'http://{}:{}@{}:{}'.format(proxy.login, proxy.password, proxy.host, str(proxy.port))
-            print(proxies)
+            print(f"worker {proxies}")
             face = FacebookScraper()
             face.set_proxy(proxies)
             break
