@@ -168,11 +168,12 @@ def start_parsing_url_new():
             proxy = get_proxy()
             if proxy is None:
                 return
-            proxies = {'https': 'https://{}:{}@{}:{}'.format(proxy.login, proxy.password, proxy.host, str(proxy.port))}
-
+            proxies = 'https://{}:{}@{}:{}'.format(proxy.login, proxy.password, proxy.host, str(proxy.port))
+            print(proxies)
             face = FacebookScraper()
             face.set_proxy(proxies)
-        except Exception:
+        except Exception as e:
+            print(e)
             attempt += -1
     if face is not None:
         return
