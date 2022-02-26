@@ -220,12 +220,9 @@ def start_parsing_url_new():
             post_url.is_ready = True
             post_url.added_date = timezone.now()
         except Exception as e:
-            if "Содержание не найдено" in res:
-                post_url.is_successful = False
-            elif "Вход на Facebook | Facebook" in res:
-                print("sleep proxy")
-            else:
-                print(e)
+
+            print(f"не ГОТОВО не СПАРСИЛОСЬ {e}" )
+        print("ГОТОВО СПАРСИЛОСЬ")
         post_url.is_parsing = False
         post_url.save()
 
