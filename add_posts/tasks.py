@@ -220,8 +220,8 @@ def start_parsing_url_new():
             post_url.is_ready = True
             post_url.added_date = timezone.now()
         except Exception as e:
-
-            print(f"не ГОТОВО не СПАРСИЛОСЬ {e}" )
+            post_url.is_successful = False
+            print(f"не ГОТОВО не СПАРСИЛОСЬ {e}")
         print("ГОТОВО СПАРСИЛОСЬ")
         post_url.is_parsing = False
         post_url.save()
