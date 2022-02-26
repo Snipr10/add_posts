@@ -202,9 +202,11 @@ def start_parsing_url_new():
             res = None
             print(post_url.db_post_url)
             try:
-                res = next(get_posts(post_urls=post_url.db_post_url))
-                next(face.get_posts_by_url(
-                    post_urls=[post_url.db_post_url]))
+                kwargs = {'options': {'account': None, 'reactions': False, 'youtube_dl': False}}
+
+                # res = next(get_posts(post_urls=post_url.db_post_url))
+                res = next(face.get_posts_by_url(
+                    post_urls=[post_url.db_post_url], **kwargs))
                 owner_fb_id = res['user_id']
 
                 user_url = urljoin(res['user_url'], urlparse(res['user_url']).path)
