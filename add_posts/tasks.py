@@ -174,19 +174,19 @@ def start_parsing_url_new():
             face.set_proxy(proxies)
             break
         except Exception as e:
-            print(e)
-    while attempt > 0:
-        try:
-            proxy = get_proxy()
-            if proxy is None:
-                return
-            proxies = 'http://{}:{}@{}:{}'.format(proxy.login, proxy.password, proxy.host, str(proxy.port))
-            print(proxies)
-            face = FacebookScraper()
-            face.set_proxy(proxies)
-        except Exception as e:
-            print(e)
-            attempt += -1
+            print("worker can not get")
+    # while attempt > 0:
+    #     try:
+    #         proxy = get_proxy()
+    #         if proxy is None:
+    #             return
+    #         proxies = 'http://{}:{}@{}:{}'.format(proxy.login, proxy.password, proxy.host, str(proxy.port))
+    #         print(proxies)
+    #         face = FacebookScraper()
+    #         face.set_proxy(proxies)
+    #     except Exception as e:
+    #         print(e)
+    #         attempt += -1
     if face is not None:
         return
     print("FACE OK")
