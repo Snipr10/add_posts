@@ -192,39 +192,40 @@ def start_parsing_url_new():
     if face is None:
         return
     print("FACE OK")
-    post_url = \
+    post_urls = \
         models.PostUrl.objects.filter(is_ready=False, is_successful=True,
-                                      is_parsing=False).order_by('added_date').first()
-    if post_url is not None:
-        post_url.is_parsing = True
-        post_url.save()
-        res = None
-        print(post_url.db_post_url)
-        try:
-            res = next(get_posts(post_urls=post_url.db_post_url))
-            next(face.get_posts_by_url(
-                post_urls=[post_url.db_post_url]))
-            owner_fb_id = res['user_id']
+                                      is_parsing=False).order_by('added_date')
+    if post_urls is not None:
+        for post_url in post_urls:
+            post_url.is_parsing = True
+            post_url.save()
+            res = None
+            print(post_url.db_post_url)
+            try:
+                res = next(get_posts(post_urls=post_url.db_post_url))
+                next(face.get_posts_by_url(
+                    post_urls=[post_url.db_post_url]))
+                owner_fb_id = res['user_id']
 
-            user_url = urljoin(res['user_url'], urlparse(res['user_url']).path)
-            user = models.User.objects.filter(link=user_url).first()
-            if user is None:
-                user = models.User.objects.create(name=res['username'], link=user_url, fb_id=owner_fb_id)
+                user_url = urljoin(res['user_url'], urlparse(res['user_url']).path)
+                user = models.User.objects.filter(link=user_url).first()
+                if user is None:
+                    user = models.User.objects.create(name=res['username'], link=user_url, fb_id=owner_fb_id)
 
-            state = models.PostStat.objects.create(likes=res['likes'], comments=res['comments'], shares=res['shares'])
-            content = models.Content.objects.create(text=res['text'])
-            task = models.Task.objects.get(id=int(post_url.task_id))
-            post = models.Post.objects.create(content=content, task=task,
-                                              user=user, stat=state)
-            print("post " + str(post.id))
-            post_url.is_ready = True
-            post_url.added_date = timezone.now()
-        except Exception as e:
-            post_url.is_successful = False
-            print(f"не ГОТОВО не СПАРСИЛОСЬ {e}")
-        print("ГОТОВО СПАРСИЛОСЬ")
-        post_url.is_parsing = False
-        post_url.save()
+                state = models.PostStat.objects.create(likes=res['likes'], comments=res['comments'], shares=res['shares'])
+                content = models.Content.objects.create(text=res['text'])
+                task = models.Task.objects.get(id=int(post_url.task_id))
+                post = models.Post.objects.create(content=content, task=task,
+                                                  user=user, stat=state)
+                print("post " + str(post.id))
+                post_url.is_ready = True
+                post_url.added_date = timezone.now()
+            except Exception as e:
+                post_url.is_successful = False
+                print(f"не ГОТОВО не СПАРСИЛОСЬ {e}")
+            print("ГОТОВО СПАРСИЛОСЬ")
+            post_url.is_parsing = False
+            post_url.save()
 
 
 @app.task
