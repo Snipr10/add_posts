@@ -189,6 +189,7 @@ def start_parsing_url_new():
             attempt += -1
     if face is not None:
         return
+    print("FACE OK")
     post_url = \
         models.PostUrl.objects.filter(is_ready=False, is_successful=True,
                                       is_parsing=False).order_by('added_date').first()
