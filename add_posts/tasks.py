@@ -171,7 +171,9 @@ def start_parsing_url_new():
             proxies = 'http://{}:{}@{}:{}'.format(proxy.login, proxy.password, proxy.host, str(proxy.port))
             print(f"worker {proxies}")
             face = FacebookScraper()
+            print("add proxies")
             face.set_proxy(proxies)
+            print("break")
             break
         except Exception as e:
             print("worker can not get")
@@ -187,7 +189,7 @@ def start_parsing_url_new():
     #     except Exception as e:
     #         print(e)
     #         attempt += -1
-    if face is not None:
+    if face is None:
         return
     print("FACE OK")
     post_url = \
