@@ -161,6 +161,9 @@ def start_parsing_url():
 
 @app.task
 def start_parsing_url_new():
+    if len(models.PostUrl.objects.filter(is_ready=False, is_successful=True,
+                                         is_parsing=False)) == 0:
+        return
     attempt = 15
     face = None
     workers = models.WorkCredentials.objects.all()
@@ -214,11 +217,13 @@ def start_parsing_url_new():
                 if user is None:
                     user = models.User.objects.create(name=res['username'], link=user_url, fb_id=owner_fb_id)
 
-                state = models.PostStat.objects.create(likes=res['likes'], comments=res['comments'], shares=res['shares'])
+                state = models.PostStat.objects.create(likes=res['likes'], comments=res['comments'],
+                                                       shares=res['shares'])
                 content = models.Content.objects.create(text=res['text'])
                 task = models.Task.objects.get(id=int(post_url.task_id))
                 post = models.Post.objects.create(content=content, task=task, date=res['time'],
-                                                  user=user, stat=state, fb_post_link=res['post_url'], fb_post_id=res['post_id'])
+                                                  user=user, stat=state, fb_post_link=res['post_url'],
+                                                  fb_post_id=res['post_id'])
                 print("post " + str(post.id))
                 post_url.is_ready = True
                 post_url.added_date = timezone.now()
@@ -258,7 +263,6 @@ def update_proxy():
                 # else:
                 #     models.Proxy.objects.create(host=host, port=port, login="test", password="test")
     #                     proxies.append(models.Proxy(host=host, port=port, login="test", password="test"))
-
 
 
 def generate_proxy_session(proxy_login, proxy_password, proxy_host, proxy_port):
@@ -387,7 +391,7 @@ def get_available_proxy():
         proxy = models.Proxy.objects.filter(available=True) \
             .order_by(
             # "attempts").first()
-        "last_time_checked").last()
+            "last_time_checked").last()
     print("proxy.id")
     print(proxy.id)
     if proxy is not None:
@@ -396,7 +400,7 @@ def get_available_proxy():
             session = generate_proxy_session(proxy.login, proxy.password, proxy.host, proxy.port)
             if check_facebook_url(session):
                 print("ok")
-                proxy.last_time_checked=datetime.now()
+                proxy.last_time_checked = datetime.now()
                 proxy.save()
                 return proxy
         except Exception as e:
@@ -515,8 +519,8 @@ def update_task():
     for task in tasks:
         try:
             task = models.Task.objects.get(id=task)
-            task.status=None
-            task.finish_time=None
+            task.status = None
+            task.finish_time = None
             task.save(update_fields=["status", "finish_time"])
         except Exception:
             pass
