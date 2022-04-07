@@ -16,7 +16,7 @@ app.conf.beat_schedule = {
     'start_update_content': {
         'task': 'add_posts.tasks.start_update_content',
         'schedule': crontab(
-            hour='*/1')
+            hour='*/10')
     },
     'update_proxy': {
         'task': 'add_posts.tasks.update_proxy',
@@ -36,7 +36,7 @@ app.conf.beat_schedule = {
     'start_parsing_url_new': {
         'task': 'add_posts.tasks.start_parsing_url_new',
         'schedule': crontab(
-            minute='*/5')
+            hour='*/5')
     },
     # 'delete_old_proxy': {
     #     'task': 'add_posts.tasks.delete_old_proxy',
